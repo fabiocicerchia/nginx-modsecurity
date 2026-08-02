@@ -1,5 +1,7 @@
 site_name: nginx-modsecurity
-site_description: One-line description.
+site_description: >-
+  The ModSecurity v3 dynamic module as an artifact — a .so you load into
+  your own nginx, not another nginx image to adopt.
 repo_url: https://github.com/fabiocicerchia/nginx-modsecurity
 docs_dir: docs
 

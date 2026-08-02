@@ -8,16 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-### Changed
-### Deprecated
-### Removed
-### Fixed
-### Security
 
-## [0.1.0] - YYYY-MM-DD
+- ModSecurity v3 dynamic module built as an artifact: the `.so`, its
+  `libmodsecurity.so.3`, a recommended `modsecurity.conf` and
+  `unicode.mapping`, tagged by ModSecurity and nginx version.
+- `make extract` to take the files without a registry.
 
-### Added
-- Initial release.
-
-[Unreleased]: https://github.com/fabiocicerchia/nginx-modsecurity/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/fabiocicerchia/nginx-modsecurity/releases/tag/v0.1.0
+Not yet released.
