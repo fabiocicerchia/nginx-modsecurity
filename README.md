@@ -107,5 +107,5 @@ executed.
 
 ## License
 
-MIT (packaging) — see [LICENSE](LICENSE). nginx is BSD-2, ModSecurity is
+Apache-2.0 (packaging) — see [LICENSE](LICENSE). nginx is BSD-2, ModSecurity is
 Apache-2.0.

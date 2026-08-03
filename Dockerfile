@@ -70,5 +70,5 @@ LABEL org.opencontainers.image.title="nginx-modsecurity-module" \
       org.opencontainers.image.description="ModSecurity v3 dynamic module for nginx, as a COPY --from artifact. Not runnable." \
       org.opencontainers.image.version="${MODSECURITY_VERSION}-nginx${NGINX_VERSION}" \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.source="https://github.com/fabiocicerchia/freelancing"
+      org.opencontainers.image.source="https://github.com/fabiocicerchia/nginx-modsecurity"
 COPY --from=build /out/ /
