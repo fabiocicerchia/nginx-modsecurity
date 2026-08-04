@@ -59,6 +59,9 @@ RUN set -eu; \
 
 COPY modsecurity.conf /out/conf/modsecurity.conf
 COPY unicode.mapping /out/conf/unicode.mapping
+# Apache-2.0 §4(d): the artifact is entirely upstream ModSecurity + nginx, so
+# the attribution has to travel inside it.
+COPY NOTICE /out/NOTICE
 
 # Nothing but the artifact. `scratch` keeps a consumer from accidentally
 # treating this as a runnable image.

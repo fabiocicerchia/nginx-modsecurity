@@ -1,5 +1,6 @@
 *
 !Dockerfile
+!NOTICE
 !nginx.conf
 !default.conf
 !main.conf
