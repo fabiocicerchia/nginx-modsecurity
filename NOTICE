@@ -1,0 +1,41 @@
+nginx-modsecurity
+Copyright 2026 Fabio Cicerchia
+
+This product includes software developed by
+Fabio Cicerchia (https://github.com/fabiocicerchia).
+
+The Apache-2.0 license on this repository covers the packaging only: the
+Dockerfile, the build wiring and the trimmed configuration. The published
+artifact itself contains nothing but upstream software, redistributed
+under its own terms:
+
+  ModSecurity 3.0.14        Apache-2.0  https://github.com/owasp-modsecurity/ModSecurity
+    -> libmodsecurity.so.3 (built from the upstream release tarball)
+  ModSecurity-nginx 1.0.4   Apache-2.0  https://github.com/owasp-modsecurity/ModSecurity-nginx
+    -> ngx_http_modsecurity_module.so
+  nginx 1.27.5              BSD-2-Clause  https://nginx.org/
+
+The two configuration files shipped in conf/ are upstream ModSecurity
+files, not original work:
+
+  modsecurity.conf   derived from ModSecurity's modsecurity.conf-recommended
+  unicode.mapping    copied verbatim from the ModSecurity distribution
+
+--------------------------------------------------------------------
+ModSecurity and ModSecurity-nginx
+Copyright 2015-2026 Trustwave Holdings, Inc. and the OWASP ModSecurity
+project contributors.
+Licensed under the Apache License, Version 2.0.
+https://github.com/owasp-modsecurity/ModSecurity/blob/v3/master/LICENSE
+
+nginx
+Copyright 2002-2026 Igor Sysoev, Nginx, Inc. and contributors.
+Licensed under the 2-clause BSD License.
+https://nginx.org/LICENSE
+--------------------------------------------------------------------
+
+Corresponding sources are the release tarballs pinned in the Dockerfile:
+
+  https://github.com/owasp-modsecurity/ModSecurity/releases/download/v3.0.14/modsecurity-v3.0.14.tar.gz
+  https://github.com/owasp-modsecurity/ModSecurity-nginx/releases/download/v1.0.4/modsecurity-nginx-v1.0.4.tar.gz
+  https://nginx.org/download/nginx-1.27.5.tar.gz
