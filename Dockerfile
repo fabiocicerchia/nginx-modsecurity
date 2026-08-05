@@ -45,7 +45,7 @@ RUN curl -fsSL "https://github.com/owasp-modsecurity/ModSecurity-nginx/releases/
       | tar -xz -C /usr/src \
  && curl -fsSL "https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz" | tar -xz -C /usr/src \
  && cd "/usr/src/nginx-${NGINX_VERSION}" \
- && ./configure --with-compat --add-dynamic-module="/usr/src/modsecurity-nginx-v${MODSECURITY_NGINX_VERSION}" \
+ && ./configure --with-compat --add-dynamic-module="/usr/src/ModSecurity-nginx-v${MODSECURITY_NGINX_VERSION}" \
  && make modules
 
 # Stage the artifact in one place so the final COPY is a single layer and the
