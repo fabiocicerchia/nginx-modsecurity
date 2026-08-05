@@ -23,6 +23,10 @@ ARG NGINX_VERSION
 ARG MODSECURITY_VERSION
 ARG MODSECURITY_NGINX_VERSION
 
+# Both builds below pipe curl into tar. Without pipefail a failed download still
+# succeeds — the RUN carries on against a source tree that was never unpacked.
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl gcc g++ make automake libtool pkgconf \
       libcurl4-openssl-dev libgeoip-dev liblmdb-dev libpcre2-dev \
@@ -31,9 +35,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # libmodsecurity v3 — the engine the nginx connector calls into.
 RUN curl -fsSL "https://github.com/owasp-modsecurity/ModSecurity/releases/download/v${MODSECURITY_VERSION}/modsecurity-v${MODSECURITY_VERSION}.tar.gz" \
-      | tar -xz -C /usr/src \
- && cd "/usr/src/modsecurity-v${MODSECURITY_VERSION}" \
- && ./build.sh && ./configure --with-pcre2 && make -j"$(nproc)" && make install
+      | tar -xz -C /usr/src
+WORKDIR /usr/src/modsecurity-v${MODSECURITY_VERSION}
+RUN ./build.sh && ./configure --with-pcre2 && make -j"$(nproc)" && make install
 
 # The connector, built against this exact nginx source.
 #
@@ -43,9 +47,9 @@ RUN curl -fsSL "https://github.com/owasp-modsecurity/ModSecurity/releases/downlo
 # with NGINX_VERSION set to the version you will load it into.
 RUN curl -fsSL "https://github.com/owasp-modsecurity/ModSecurity-nginx/releases/download/v${MODSECURITY_NGINX_VERSION}/modsecurity-nginx-v${MODSECURITY_NGINX_VERSION}.tar.gz" \
       | tar -xz -C /usr/src \
- && curl -fsSL "https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz" | tar -xz -C /usr/src \
- && cd "/usr/src/nginx-${NGINX_VERSION}" \
- && ./configure --with-compat --add-dynamic-module="/usr/src/ModSecurity-nginx-v${MODSECURITY_NGINX_VERSION}" \
+ && curl -fsSL "https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz" | tar -xz -C /usr/src
+WORKDIR /usr/src/nginx-${NGINX_VERSION}
+RUN ./configure --with-compat --add-dynamic-module="/usr/src/ModSecurity-nginx-v${MODSECURITY_NGINX_VERSION}" \
  && make modules
 
 # Stage the artifact in one place so the final COPY is a single layer and the
