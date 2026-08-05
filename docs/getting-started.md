@@ -158,3 +158,40 @@ make clean                          # rm -rf dist
 `make test` is the one that matters: it starts a stock nginx of the target
 version with the module loaded. Compiling proves nothing here — the failure
 mode is a module that builds and will not load.
+
+## Two things that will bite you
+
+**It is two shared objects, not one.** `ngx_http_modsecurity_module.so` links
+against `libmodsecurity.so.3`. Copy only the module and nginx starts with
+`libmodsecurity.so.3: cannot open shared object file`, which does not obviously
+point at the missing half. Both are in the artifact — copy both, and run
+`ldconfig` over the library directory.
+
+**The module is tied to the nginx version and the libc.** `--with-compat` makes
+a module loadable by a binary built elsewhere; it does not make it
+version-independent. nginx refuses a mismatch with `module ... is not binary
+compatible`, and a glibc build dropped into `nginx:alpine` fails with `Error
+loading shared library`. Build with `NGINX_VERSION` and `BASE` matching the
+target:
+
+```sh
+make build NGINX_VERSION=1.27.5     # then load it into nginx:1.27.5-*
+```
+
+The artifact records what it was built against at `/NGINX_VERSION` and
+`/MODSECURITY_VERSION`, so a consumer can check rather than guess.
+
+## Test
+
+```sh
+make test NGINX_VERSION=1.27.5
+```
+
+Builds the module, loads it into a stock nginx of that version, runs `nginx -t`,
+and fires one request a single rule should block. Compiling proves nothing here
+— a module built against the wrong version compiles cleanly and fails at
+startup — so this is a load test, not a build test.
+
+**Not yet run.** The Docker daemon was unavailable on the machine this was
+converted on. The build and the test are written and shell-checked; neither has
+executed.
