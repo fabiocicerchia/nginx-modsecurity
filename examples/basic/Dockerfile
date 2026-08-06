@@ -6,6 +6,9 @@
 FROM fabiocicerchia/nginx-modsecurity-module:3.0.14-nginx1.27.5 AS modsec
 
 FROM nginx:1.27.5-bookworm
+# The version-drift check below pipes into sed; without pipefail a failing
+# `nginx -v` would leave an empty string that silently compares unequal.
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # The runtime halves of what libmodsecurity links against. The -dev packages
 # were only needed to build it.
