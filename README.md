@@ -5,6 +5,7 @@
 [![Security](https://github.com/fabiocicerchia/nginx-modsecurity/actions/workflows/security.yml/badge.svg)](https://github.com/fabiocicerchia/nginx-modsecurity/actions/workflows/security.yml)
 [![License](https://img.shields.io/badge/license-Apache_2.0-blue.svg)](LICENSE)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/fabiocicerchia/nginx-modsecurity/badge)](https://securityscorecards.dev/viewer/?uri=github.com/fabiocicerchia/nginx-modsecurity)
+[![CI carbon](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/fabiocicerchia/nginx-modsecurity/gh-pages/badge.json)](.github/workflows/carbon-badge.yml)
 
 The **ModSecurity v3 dynamic module for nginx, as an artifact** — a `.so` you
 load into your own nginx, not another nginx image to adopt.
