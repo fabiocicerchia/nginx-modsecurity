@@ -19,7 +19,10 @@ The two configuration files shipped in conf/ are upstream ModSecurity
 files, not original work:
 
   modsecurity.conf   derived from ModSecurity's modsecurity.conf-recommended
-  unicode.mapping    copied verbatim from the ModSecurity distribution
+  unicode.mapping    copied verbatim from the ModSecurity source release
+                     (extracted at build time from the checksum-verified
+                     modsecurity-v${MODSECURITY_VERSION}.tar.gz, so it always
+                     matches the engine it ships beside)
 
 --------------------------------------------------------------------
 ModSecurity and ModSecurity-nginx
