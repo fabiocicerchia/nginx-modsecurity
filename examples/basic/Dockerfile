@@ -5,7 +5,7 @@
 # different version.
 FROM fabiocicerchia/nginx-modsecurity-module:3.0.14-nginx1.27.5 AS modsec
 
-FROM nginx:1.27.5-bookworm
+FROM nginx:1.27.5-bookworm@sha256:6784fb0834aa7dbbe12e3d7471e69c290df3e6ba810dc38b34ae33d3c1c05f7d
 # The version-drift check below pipes into sed; without pipefail a failing
 # `nginx -v` would leave an empty string that silently compares unequal.
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
