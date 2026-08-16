@@ -1,0 +1,14 @@
+# Trivy misconfiguration checks that do not apply to what this repo builds.
+#
+# DS-0002 (image must not run as root) and DS-0026 (no HEALTHCHECK) both
+# describe a long-running service image. Dockerfile and Dockerfile.alpine end
+# in `FROM scratch` and contain nothing but the compiled module — there is no
+# process to run as anybody, and nothing to health-check. examples/basic
+# extends the official nginx image, which starts its master as root on purpose
+# so it can bind :80 and drop to the `nginx` user for its workers; changing
+# that would stop the example being an example of stock nginx.
+#
+# Both are re-flagged on every new Dockerfile added here, so this is a
+# statement about the repo rather than a one-off dismissal in the UI.
+DS-0002
+DS-0026
