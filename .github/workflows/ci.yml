@@ -18,8 +18,16 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      # Both libcs, because a module built against one does not load into the
+      # other and the error does not say which it wanted. One failing must not
+      # hide the other.
+      fail-fast: false
+      matrix:
+        flavour: [bookworm, alpine]
+    name: test (${{ matrix.flavour }})
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
 
       - name: Build image and run smoke tests
-        run: make test
+        run: make test FLAVOUR=${{ matrix.flavour }}

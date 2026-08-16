@@ -66,3 +66,48 @@ Full docs live in [`docs/`](docs/). Runnable examples live in [`examples/`](exam
 
 Apache-2.0 (packaging) — see [LICENSE](LICENSE). nginx is BSD-2, ModSecurity is
 Apache-2.0.
+
+## glibc or musl
+
+The module is a compiled artifact, so it can only be loaded into a runtime with
+the same libc. Both are built:
+
+```sh
+make build                    # glibc  -> 3.0.14-nginx1.27.5
+make build FLAVOUR=alpine     # musl   -> 3.0.14-nginx1.27.5-alpine
+```
+
+The flavour is in the tag rather than left for a consumer to remember, because
+getting it wrong fails at nginx startup with `Error loading shared library`,
+which does not say which libc it wanted.
+
+**What the musl variant is worth.** The artifact itself is the same size — it
+is mostly `libmodsecurity.so.3` either way. The saving is in the image you load
+it into:
+
+| runtime with the module | size |
+|---|---|
+| `nginx:1.27.5-bookworm` | 364 MB |
+| `nginx:1.27.5-alpine` | **158 MB** |
+
+206 MB, or 57%, measured on the images the test suite builds.
+
+### Two things musl needs that Debian does not
+
+**`libstdc++`.** ModSecurity is C++ and Alpine's nginx image does not ship the
+runtime, so the module loads and then fails on
+`libstdc++.so.6: No such file or directory`.
+
+**The library path is a file, not `ldconfig`.** musl reads
+`/etc/ld-musl-<arch>.path`, and that file does not exist by default. Creating
+it **replaces** the built-in search path rather than adding to it, so it has to
+list the defaults too:
+
+```dockerfile
+RUN printf '%s\n' /lib /usr/local/lib /usr/lib /usr/local/modsecurity/lib \
+      > "/etc/ld-musl-$(uname -m).path"
+```
+
+Appending a bare line to it — the obvious thing — leaves nginx unable to find
+its own `libssl`, and the errors point at nginx rather than at what changed.
+Both are in `test.sh`, which is the copy worth following.
