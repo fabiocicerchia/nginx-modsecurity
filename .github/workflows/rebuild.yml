@@ -49,8 +49,13 @@ jobs:
       - id: read
         run: echo "versions=$(jq -c '.supported' versions.json)" >> "$GITHUB_OUTPUT"
       - name: Say why
+        env:
+          # Through the environment, not into `run:`. A repository_dispatch
+          # payload is arbitrary user input, and interpolated into the shell it
+          # could close the quotes and run its own commands on the runner.
+          REASON: ${{ github.event.client_payload.reason || inputs.reason || 'scheduled rebuild' }}
         run: |
-          echo "reason: ${{ github.event.client_payload.reason || inputs.reason || 'scheduled rebuild' }}"
+          echo "reason: $REASON"
 
   rebuild:
     needs: matrix
