@@ -6,12 +6,18 @@ NGINX_VERSION       ?= 1.27.5
 MODSECURITY_VERSION ?= 3.0.14
 VERSION             ?= $(MODSECURITY_VERSION)-nginx$(NGINX_VERSION)
 PLATFORMS           ?= linux/amd64,linux/arm64
+# Overridable so one checkout can build every supported version — CI passes
+# these from versions.json, which is where the set is defined. Defaulting to
+# the Dockerfile's own pins keeps a bare `make build` unchanged.
+BASE                ?= nginx:$(NGINX_VERSION)-bookworm
+NGINX_SHA256        ?=
 
 BUILD_ARGS = --build-arg NGINX_VERSION=$(NGINX_VERSION) \
              --build-arg MODSECURITY_VERSION=$(MODSECURITY_VERSION) \
-             --build-arg BASE=nginx:$(NGINX_VERSION)-bookworm
+             --build-arg BASE=$(BASE) \
+             $(if $(NGINX_SHA256),--build-arg NGINX_SHA256=$(NGINX_SHA256),)
 
-.PHONY: help build extract lint test push release clean
+.PHONY: help build extract lint test push release clean print-image print-version
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -39,3 +45,11 @@ release: ## Build and push multi-arch
 
 clean: ## Remove extracted artifacts
 	rm -rf dist
+
+# Machine-readable, for CI: the tag scheme lives here rather than being
+# duplicated into a workflow where it can drift from what `make push` builds.
+print-image: ## Print the image name
+	@echo $(IMAGE)
+
+print-version: ## Print the tag for the current NGINX_VERSION
+	@echo $(VERSION)
