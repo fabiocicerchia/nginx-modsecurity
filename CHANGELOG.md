@@ -5,6 +5,14 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0](https://github.com/fabiocicerchia/nginx-modsecurity/compare/v1.0.2...v1.1.0) (2026-08-24)
+
+
+### Features
+
+* **build:** musl/Alpine variant, linked and proven to load ([#25](https://github.com/fabiocicerchia/nginx-modsecurity/issues/25)) ([eb777f1](https://github.com/fabiocicerchia/nginx-modsecurity/commit/eb777f1950e22de4b091f057864be754d36cd171))
+* **ci:** build every supported nginx version, and rebuild when it goes stale ([#24](https://github.com/fabiocicerchia/nginx-modsecurity/issues/24)) ([03a7cde](https://github.com/fabiocicerchia/nginx-modsecurity/commit/03a7cdee8db2de9c2d6a79387697c26b5f6874b6))
+
 ## [1.0.2](https://github.com/fabiocicerchia/nginx-modsecurity/compare/v1.0.1...v1.0.2) (2026-08-13)
 
 
