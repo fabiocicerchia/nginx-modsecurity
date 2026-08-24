@@ -16,18 +16,42 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # versions.json is the single source of truth for what is supported. Read
+  # here rather than duplicated into the matrix, so adding a version is one
+  # edit and cannot drift from what the Dockerfile verifies.
+  matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      versions: ${{ steps.read.outputs.versions }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - id: read
+        run: echo "versions=$(jq -c '.supported' versions.json)" >> "$GITHUB_OUTPUT"
+
   test:
+    needs: matrix
     runs-on: ubuntu-latest
     strategy:
-      # Both libcs, because a module built against one does not load into the
-      # other and the error does not say which it wanted. One failing must not
-      # hide the other.
+      # Every supported version against both libcs, and one failing does not
+      # hide the others: a module that loads on 1.27 and not on 1.26, or on
+      # glibc and not musl, is precisely the bug this matrix exists to catch.
       fail-fast: false
       matrix:
+        version: ${{ fromJSON(needs.matrix.outputs.versions) }}
         flavour: [bookworm, alpine]
-    name: test (${{ matrix.flavour }})
+    name: test (nginx ${{ matrix.version.nginx }} ${{ matrix.flavour }})
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
 
       - name: Build image and run smoke tests
-        run: make test FLAVOUR=${{ matrix.flavour }}
+        # BASE is left to the Makefile, which derives nginx:<version>-<flavour>:
+        # versions.json pins one base per version, not one per libc.
+        env:
+          NGINX_VERSION: ${{ matrix.version.nginx }}
+          NGINX_SHA256: ${{ matrix.version.sha256 }}
+          FLAVOUR: ${{ matrix.flavour }}
+        run: |
+          make test \
+            NGINX_VERSION="$NGINX_VERSION" \
+            NGINX_SHA256="$NGINX_SHA256" \
+            FLAVOUR="$FLAVOUR"

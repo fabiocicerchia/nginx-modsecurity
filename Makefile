@@ -12,12 +12,18 @@ DOCKERFILE          ?= $(if $(filter alpine,$(FLAVOUR)),Dockerfile.alpine,Docker
 TAG_SUFFIX          ?= $(if $(filter alpine,$(FLAVOUR)),-alpine,)
 VERSION             ?= $(MODSECURITY_VERSION)-nginx$(NGINX_VERSION)$(TAG_SUFFIX)
 PLATFORMS           ?= linux/amd64,linux/arm64
+# Overridable so one checkout can build every supported version — CI passes
+# these from versions.json, which is where the set is defined. Defaulting to
+# the Dockerfile's own pins keeps a bare `make build` unchanged.
+BASE                ?= nginx:$(NGINX_VERSION)-$(FLAVOUR)
+NGINX_SHA256        ?=
 
 BUILD_ARGS = --build-arg NGINX_VERSION=$(NGINX_VERSION) \
              --build-arg MODSECURITY_VERSION=$(MODSECURITY_VERSION) \
-             --build-arg BASE=nginx:$(NGINX_VERSION)-$(FLAVOUR)
+             --build-arg BASE=$(BASE) \
+             $(if $(NGINX_SHA256),--build-arg NGINX_SHA256=$(NGINX_SHA256),)
 
-.PHONY: help build extract lint test push release clean
+.PHONY: help build extract lint test push release clean print-image print-version
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -41,8 +47,16 @@ push: build ## Push the artifact image
 	docker push $(IMAGE):$(VERSION)
 
 release: ## Build and push multi-arch
-	docker buildx build --platform $(PLATFORMS) $(BUILD_ARGS) \
+	docker buildx build -f $(DOCKERFILE) --platform $(PLATFORMS) $(BUILD_ARGS) \
 		-t $(IMAGE):$(VERSION) -t $(IMAGE):latest --push .
 
 clean: ## Remove extracted artifacts
 	rm -rf dist
+
+# Machine-readable, for CI: the tag scheme lives here rather than being
+# duplicated into a workflow where it can drift from what `make push` builds.
+print-image: ## Print the image name
+	@echo $(IMAGE)
+
+print-version: ## Print the tag for the current NGINX_VERSION
+	@echo $(VERSION)

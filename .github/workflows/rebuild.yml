@@ -1,0 +1,127 @@
+name: rebuild
+
+# A security image going stale is the failure that matters here: the module is
+# compiled against a base image that receives CVE fixes, and a build from six
+# months ago ships whatever was vulnerable then.
+#
+# Three triggers, because the three ways an image goes stale are different:
+#
+#   schedule            — the base image moved. Rebuilding weekly picks up
+#                         Debian's security updates without anyone noticing an
+#                         advisory.
+#   repository_dispatch — a CVE was announced. Any watcher (a Dependabot alert
+#                         action, the trivy scan in security.yml, or an
+#                         external advisory feed) can fire this immediately
+#                         rather than waiting for the schedule:
+#
+#                           gh api repos/OWNER/REPO/dispatches \
+#                             -f event_type=cve \
+#                             -f 'client_payload[reason]=CVE-2026-XXXX in libmodsecurity'
+#
+#   workflow_dispatch   — someone read the advisory email first.
+
+on:
+  schedule:
+    - cron: "0 5 * * 1" # Mondays, 05:00 UTC — before the working week
+  repository_dispatch:
+    types: [cve]
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: Why this rebuild is being run
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rebuild
+  cancel-in-progress: false
+
+jobs:
+  matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      versions: ${{ steps.read.outputs.versions }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - id: read
+        run: echo "versions=$(jq -c '.supported' versions.json)" >> "$GITHUB_OUTPUT"
+      - name: Say why
+        env:
+          # Through the environment, not into `run:`. A repository_dispatch
+          # payload is arbitrary user input, and interpolated into the shell it
+          # could close the quotes and run its own commands on the runner.
+          REASON: ${{ github.event.client_payload.reason || inputs.reason || 'scheduled rebuild' }}
+        run: |
+          echo "reason: $REASON"
+
+  rebuild:
+    needs: matrix
+    runs-on: ubuntu-latest
+    strategy:
+      # One stale version must not stop the others being refreshed — the point
+      # of the run is to get current images out.
+      fail-fast: false
+      matrix:
+        version: ${{ fromJSON(needs.matrix.outputs.versions) }}
+        flavour: [bookworm, alpine]
+    name: rebuild (nginx ${{ matrix.version.nginx }} ${{ matrix.flavour }})
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # Tested before it is pushed, every time. A rebuild that publishes a
+      # module which does not load is worse than a stale one that does.
+      - name: Build and test against the current base
+        env:
+          NGINX_VERSION: ${{ matrix.version.nginx }}
+          NGINX_SHA256: ${{ matrix.version.sha256 }}
+          FLAVOUR: ${{ matrix.flavour }}
+        run: |
+          make test \
+            NGINX_VERSION="$NGINX_VERSION" \
+            NGINX_SHA256="$NGINX_SHA256" \
+            FLAVOUR="$FLAVOUR"
+
+      # Publishing is conditional on the credential existing, so a fork or a
+      # repo without it still gets the useful half — an early warning that the
+      # current base no longer builds.
+      - name: Log in to Docker Hub
+        id: login
+        if: ${{ env.DOCKERHUB_USERNAME != '' }}
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push
+        if: ${{ steps.login.outcome == 'success' }}
+        env:
+          NGINX_VERSION: ${{ matrix.version.nginx }}
+          NGINX_SHA256: ${{ matrix.version.sha256 }}
+          FLAVOUR: ${{ matrix.flavour }}
+        run: |
+          # The tag names the nginx version it was compiled against, because
+          # loading a module into the wrong one fails at startup with an error
+          # that does not say so.
+          make push \
+            NGINX_VERSION="$NGINX_VERSION" \
+            NGINX_SHA256="$NGINX_SHA256" \
+            FLAVOUR="$FLAVOUR"
+
+      # `latest` follows the default version only. A rolling tag that moved with
+      # whichever matrix job finished last would be a different nginx each week.
+      - name: Tag latest
+        if: ${{ steps.login.outcome == 'success' && matrix.version.default }}
+        env:
+          NGINX_VERSION: ${{ matrix.version.nginx }}
+          FLAVOUR: ${{ matrix.flavour }}
+        run: |
+          IMAGE=$(make -s print-image)
+          VERSION=$(make -s print-version NGINX_VERSION="$NGINX_VERSION" FLAVOUR="$FLAVOUR")
+          if [ "$FLAVOUR" = alpine ]; then LATEST=latest-alpine; else LATEST=latest; fi
+          docker tag "$IMAGE:$VERSION" "$IMAGE:$LATEST"
+          docker push "$IMAGE:$LATEST"
