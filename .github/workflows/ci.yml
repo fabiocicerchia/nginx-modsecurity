@@ -16,10 +16,39 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  # versions.json is the single source of truth for what is supported. Read
+  # here rather than duplicated into the matrix, so adding a version is one
+  # edit and cannot drift from what the Dockerfile verifies.
+  matrix:
     runs-on: ubuntu-latest
+    outputs:
+      versions: ${{ steps.read.outputs.versions }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - id: read
+        run: echo "versions=$(jq -c '.supported' versions.json)" >> "$GITHUB_OUTPUT"
+
+  test:
+    needs: matrix
+    runs-on: ubuntu-latest
+    strategy:
+      # Every supported version is tested, and one failing does not hide the
+      # others: a module that loads on 1.27 and not on 1.26 is precisely the
+      # bug this matrix exists to catch.
+      fail-fast: false
+      matrix:
+        version: ${{ fromJSON(needs.matrix.outputs.versions) }}
+    name: test (nginx ${{ matrix.version.nginx }})
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
 
       - name: Build image and run smoke tests
-        run: make test
+        env:
+          NGINX_VERSION: ${{ matrix.version.nginx }}
+          NGINX_SHA256: ${{ matrix.version.sha256 }}
+          BASE: ${{ matrix.version.base }}
+        run: |
+          make test \
+            NGINX_VERSION="$NGINX_VERSION" \
+            NGINX_SHA256="$NGINX_SHA256" \
+            BASE="$BASE"

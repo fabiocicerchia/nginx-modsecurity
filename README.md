@@ -66,3 +66,50 @@ Full docs live in [`docs/`](docs/). Runnable examples live in [`examples/`](exam
 
 Apache-2.0 (packaging) — see [LICENSE](LICENSE). nginx is BSD-2, ModSecurity is
 Apache-2.0.
+
+## Supported nginx versions
+
+`versions.json` is the source of truth. CI builds and tests **every** version in
+it, and the published tag names the nginx version the module was compiled
+against:
+
+| nginx | channel | tag |
+|---|---|---|
+| 1.28.0 | stable | `3.0.14-nginx1.28.0` |
+| 1.27.5 | mainline | `3.0.14-nginx1.27.5` — also `latest` |
+| 1.26.3 | oldstable | `3.0.14-nginx1.26.3` |
+
+The tag names the version because loading a module into a different one fails
+at startup with `module ... is not binary compatible`, which does not say that
+is what happened. `latest` follows the default version only — a rolling tag
+that moved with whichever matrix job finished last would be a different nginx
+each week.
+
+Adding a version is one edit to `versions.json`: the checksum there is the same
+one the Dockerfile verifies before unpacking, so a version cannot be built
+without one.
+
+## Staying current
+
+A security image going stale is the failure that matters here: the module is
+compiled against a base that receives CVE fixes, and a build from six months
+ago ships whatever was vulnerable then.
+
+`rebuild.yml` has three triggers, because there are three ways this goes stale:
+
+- **Weekly schedule** — picks up the base image's security updates without
+  anyone reading an advisory.
+- **`repository_dispatch` with type `cve`** — any watcher can fire a rebuild
+  the moment an advisory lands:
+
+  ```sh
+  gh api repos/OWNER/REPO/dispatches -f event_type=cve \
+    -f 'client_payload[reason]=CVE-2026-XXXX in libmodsecurity'
+  ```
+
+- **Manual dispatch** — someone read the advisory email first.
+
+Every rebuild runs the full test suite before it pushes: a rebuild that
+publishes a module which does not load is worse than a stale one that does.
+Publishing is conditional on the registry credential existing, so a fork still
+gets the useful half — an early warning that the current base no longer builds.
