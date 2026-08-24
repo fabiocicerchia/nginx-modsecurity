@@ -1,5 +1,16 @@
-# nginx-modsecurity — the ModSecurity v3 dynamic module for nginx, as an
-# artifact rather than an image.
+# nginx-modsecurity, musl/Alpine variant — the ModSecurity v3 dynamic module
+# for nginx, as an artifact rather than an image.
+#
+# Separate from the glibc Dockerfile rather than one file with a package-manager
+# branch: the two differ in the dependency list, in what has to be built from
+# source (Alpine has no libyajl-dev), and in the linker flags below. A shell
+# conditional spanning all of that reads worse than two explicit files, and the
+# shared parts — versions, checksums, the staging layout — are passed in as
+# build args from one Makefile.
+#
+# A module built here loads into nginx:<version>-alpine and NOT into a glibc
+# nginx. That is the whole reason this file exists: the error a mismatched libc
+# produces ("Error loading shared library") does not say which libc it wanted.
 #
 # The final stage is `scratch` and contains nothing but the shared objects and
 # the two files ModSecurity needs at runtime. It is not runnable; it exists to
@@ -25,10 +36,9 @@ ARG MODSECURITY_SHA256=f7599057b35e67ab61764265daddf9ab03c35cee1e55527547afb073c
 # VERSION-BUMP
 ARG MODSECURITY_NGINX_SHA256=6bdc7570911be884c1e43aaf85046137f9fde0cfa0dd4a55b853c81c45a13313
 # The base the module is compiled against. It must match the libc of the image
-# you load it into: a module built here on glibc will not load into an
-# nginx:alpine, and the error ("Error loading shared library") does not say so.
-# Build Dockerfile.alpine for that runtime — `make build FLAVOUR=alpine`.
-ARG BASE=nginx:1.27.5-bookworm
+# you load it into: a module built here on musl will not load into a Debian
+# nginx, and the error ("Error loading shared library") does not say so.
+ARG BASE=nginx:1.27.5-alpine
 
 FROM ${BASE} AS build
 ARG NGINX_VERSION
@@ -41,13 +51,20 @@ ARG MODSECURITY_NGINX_SHA256
 # Downloads land in a file and are checksummed before they are unpacked, so a
 # substituted artifact fails the build instead of being compiled into the WAF.
 # pipefail stays on for everything else that pipes.
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-      ca-certificates curl gcc g++ make automake libtool pkgconf \
-      libcurl4-openssl-dev libgeoip-dev liblmdb-dev libpcre2-dev \
-      libxml2-dev libyajl-dev zlib1g-dev libssl-dev \
- && rm -rf /var/lib/apt/lists/*
+# linux-headers is not implied on Alpine as it is on Debian, and ModSecurity's
+# configure fails late and unhelpfully without it. libxml2-dev brings the
+# headers the parser needs; yajl-dev is in community, which nginx:alpine has
+# enabled.
+RUN apk add --no-cache \
+      ca-certificates curl build-base linux-headers \
+      automake autoconf libtool pkgconf \
+      curl-dev geoip-dev lmdb-dev pcre2-dev \
+      libxml2-dev yajl-dev zlib-dev openssl-dev \
+ && mkdir -p /usr/src
+# ^ Debian images ship /usr/src; Alpine does not, and tar failing to change
+# into it is the first thing that goes wrong on this base.
 
 # libmodsecurity v3 — the engine the nginx connector calls into.
 RUN set -eu; \

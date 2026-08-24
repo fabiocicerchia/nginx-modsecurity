@@ -32,23 +32,26 @@ jobs:
     needs: matrix
     runs-on: ubuntu-latest
     strategy:
-      # Every supported version is tested, and one failing does not hide the
-      # others: a module that loads on 1.27 and not on 1.26 is precisely the
-      # bug this matrix exists to catch.
+      # Every supported version against both libcs, and one failing does not
+      # hide the others: a module that loads on 1.27 and not on 1.26, or on
+      # glibc and not musl, is precisely the bug this matrix exists to catch.
       fail-fast: false
       matrix:
         version: ${{ fromJSON(needs.matrix.outputs.versions) }}
-    name: test (nginx ${{ matrix.version.nginx }})
+        flavour: [bookworm, alpine]
+    name: test (nginx ${{ matrix.version.nginx }} ${{ matrix.flavour }})
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
 
       - name: Build image and run smoke tests
+        # BASE is left to the Makefile, which derives nginx:<version>-<flavour>:
+        # versions.json pins one base per version, not one per libc.
         env:
           NGINX_VERSION: ${{ matrix.version.nginx }}
           NGINX_SHA256: ${{ matrix.version.sha256 }}
-          BASE: ${{ matrix.version.base }}
+          FLAVOUR: ${{ matrix.flavour }}
         run: |
           make test \
             NGINX_VERSION="$NGINX_VERSION" \
             NGINX_SHA256="$NGINX_SHA256" \
-            BASE="$BASE"
+            FLAVOUR="$FLAVOUR"

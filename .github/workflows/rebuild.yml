@@ -66,7 +66,8 @@ jobs:
       fail-fast: false
       matrix:
         version: ${{ fromJSON(needs.matrix.outputs.versions) }}
-    name: rebuild (nginx ${{ matrix.version.nginx }})
+        flavour: [bookworm, alpine]
+    name: rebuild (nginx ${{ matrix.version.nginx }} ${{ matrix.flavour }})
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -76,12 +77,12 @@ jobs:
         env:
           NGINX_VERSION: ${{ matrix.version.nginx }}
           NGINX_SHA256: ${{ matrix.version.sha256 }}
-          BASE: ${{ matrix.version.base }}
+          FLAVOUR: ${{ matrix.flavour }}
         run: |
           make test \
             NGINX_VERSION="$NGINX_VERSION" \
             NGINX_SHA256="$NGINX_SHA256" \
-            BASE="$BASE"
+            FLAVOUR="$FLAVOUR"
 
       # Publishing is conditional on the credential existing, so a fork or a
       # repo without it still gets the useful half — an early warning that the
@@ -101,7 +102,7 @@ jobs:
         env:
           NGINX_VERSION: ${{ matrix.version.nginx }}
           NGINX_SHA256: ${{ matrix.version.sha256 }}
-          BASE: ${{ matrix.version.base }}
+          FLAVOUR: ${{ matrix.flavour }}
         run: |
           # The tag names the nginx version it was compiled against, because
           # loading a module into the wrong one fails at startup with an error
@@ -109,7 +110,7 @@ jobs:
           make push \
             NGINX_VERSION="$NGINX_VERSION" \
             NGINX_SHA256="$NGINX_SHA256" \
-            BASE="$BASE"
+            FLAVOUR="$FLAVOUR"
 
       # `latest` follows the default version only. A rolling tag that moved with
       # whichever matrix job finished last would be a different nginx each week.
@@ -117,8 +118,10 @@ jobs:
         if: ${{ steps.login.outcome == 'success' && matrix.version.default }}
         env:
           NGINX_VERSION: ${{ matrix.version.nginx }}
+          FLAVOUR: ${{ matrix.flavour }}
         run: |
           IMAGE=$(make -s print-image)
-          VERSION=$(make -s print-version NGINX_VERSION="$NGINX_VERSION")
-          docker tag "$IMAGE:$VERSION" "$IMAGE:latest"
-          docker push "$IMAGE:latest"
+          VERSION=$(make -s print-version NGINX_VERSION="$NGINX_VERSION" FLAVOUR="$FLAVOUR")
+          if [ "$FLAVOUR" = alpine ]; then LATEST=latest-alpine; else LATEST=latest; fi
+          docker tag "$IMAGE:$VERSION" "$IMAGE:$LATEST"
+          docker push "$IMAGE:$LATEST"
