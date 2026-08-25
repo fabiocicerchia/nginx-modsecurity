@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0](https://github.com/fabiocicerchia/nginx-modsecurity/compare/v1.1.0...v1.2.0) (2026-08-25)
+
+
+### Features
+
+* **docs:** build the docs site in Actions and drop Read the Docs ([#33](https://github.com/fabiocicerchia/nginx-modsecurity/issues/33)) ([b1b2628](https://github.com/fabiocicerchia/nginx-modsecurity/commit/b1b262867ea360e077db9623135e72da24a125f6))
+
 ## [1.1.0](https://github.com/fabiocicerchia/nginx-modsecurity/compare/v1.0.2...v1.1.0) (2026-08-24)
 
 
