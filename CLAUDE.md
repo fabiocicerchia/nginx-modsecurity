@@ -51,6 +51,10 @@ make clean        # Remove extracted artifacts
   the CRS being present. `test-crs.sh` is the other half: the real rule set,
   asserted per attack class, with negative cases — a WAF that blocks everything
   is as broken as one that blocks nothing, and only the negative cases catch it.
+  It serves a real file rather than `return 200`: `return` answers in the
+  rewrite phase, before ModSecurity's phase-2 handler, so against it the whole
+  CRS loads and never runs. That is why `test.sh`'s phase:1 rule passes while
+  every phase:2 CRS rule silently does not.
 - The deliverable is the `.so`, not the image. Keep `make extract` working.
 - The module must match the target nginx version exactly — version skew is the
   failure mode this repo exists to avoid.

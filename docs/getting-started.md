@@ -220,6 +220,23 @@ negative cases catch it.
 cannot compile fails there with a file and a line, rather than at whichever
 request first reaches it.
 
+### What this test found on its first run
+
+The location it benchmarks against serves a **real file**, not `return 200`,
+and that is not a stylistic choice.
+
+`return` is a rewrite-phase directive: it answers the request before the
+preaccess phase, which is where ModSecurity-nginx runs its **phase 2** handler.
+Every CRS blocking rule is `phase:2` — 949110 is what evaluates the anomaly
+score — so against a `return 200` location the entire rule set loads, parses,
+reports `rules loaded ... 840`, and is never consulted. Every attack in the
+table above came back `200`, with not one rule line in the error log.
+
+`test.sh` gets away with `return 200` because its single hand-written rule is
+`phase:1`, which does run in the rewrite phase. That is precisely the class of
+gap a one-rule smoke test cannot see: the module loads, a rule fires, and the
+rules an adopter actually depends on never execute.
+
 Kept separate from `make test` because it downloads the rule set: `make test`
 stays the fast answer to *does the module load*.
 

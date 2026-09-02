@@ -44,6 +44,19 @@ mkdir -p "$WORK/crs"
 tar -xzf "$WORK/crs.tar.gz" -C "$WORK/crs" --strip-components=1
 cp "$WORK/crs/crs-setup.conf.example" "$WORK/crs/crs-setup.conf"
 
+# NOT `return 200`, and this is the whole reason the first run of this script
+# reported every attack as a 200 with 840 rules loaded and not one rule line in
+# the error log.
+#
+# `return` is a REWRITE-phase directive: it answers the request before the
+# preaccess phase, which is where ModSecurity-nginx runs its phase-2 handler.
+# Every CRS blocking rule is phase:2 — 949110 evaluates the anomaly score there
+# — so the whole rule set was loaded, parsed, and never consulted.
+#
+# test.sh gets away with `return 200` because its single hand-written rule is
+# phase:1, which runs in the rewrite phase and does fire. That is exactly the
+# kind of gap a one-rule smoke test cannot see, and finding it is what this
+# script is for.
 cat > "$WORK/nginx.conf" <<'CONF'
 load_module /usr/lib/nginx/modules/ngx_http_modsecurity_module.so;
 events {}
@@ -52,7 +65,8 @@ http {
     modsecurity_rules_file /etc/nginx/modsecurity/main.conf;
     server {
         listen 80;
-        location / { return 200 "ok\n"; }
+        root /var/www/crs-test;
+        location / { index index.html; }
     }
 }
 CONF
@@ -96,6 +110,12 @@ COPY --from=module /lib/ /usr/local/modsecurity/lib/
 COPY --from=module /conf/unicode.mapping /etc/nginx/modsecurity/unicode.mapping
 RUN printf '%s\\n' /lib /usr/local/lib /usr/lib /usr/local/modsecurity/lib \\
       > "/etc/ld-musl-\$(uname -m).path"
+# A real document root, served through the content phase, so the request
+# actually reaches ModSecurity's phase-2 handler. app.min.js exists because one
+# of the negative cases asks for a path with a dot in it.
+RUN mkdir -p /var/www/crs-test/assets \\
+ && printf 'ok\\n' > /var/www/crs-test/index.html \\
+ && printf 'ok\\n' > /var/www/crs-test/assets/app.min.js
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY main.conf /etc/nginx/modsecurity/main.conf
 COPY crs/ /etc/nginx/modsecurity/crs/
@@ -111,6 +131,12 @@ COPY --from=module /modules/ngx_http_modsecurity_module.so /usr/lib/nginx/module
 COPY --from=module /lib/ /usr/local/modsecurity/lib/
 COPY --from=module /conf/unicode.mapping /etc/nginx/modsecurity/unicode.mapping
 RUN ldconfig /usr/local/modsecurity/lib
+# A real document root, served through the content phase, so the request
+# actually reaches ModSecurity's phase-2 handler. app.min.js exists because one
+# of the negative cases asks for a path with a dot in it.
+RUN mkdir -p /var/www/crs-test/assets \\
+ && printf 'ok\\n' > /var/www/crs-test/index.html \\
+ && printf 'ok\\n' > /var/www/crs-test/assets/app.min.js
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY main.conf /etc/nginx/modsecurity/main.conf
 COPY crs/ /etc/nginx/modsecurity/crs/
