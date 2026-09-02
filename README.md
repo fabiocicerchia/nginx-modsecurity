@@ -58,6 +58,19 @@ make extract NGINX_VERSION=1.27.5
 # dist/conf/{modsecurity.conf,unicode.mapping}
 ```
 
+## What CI proves on every change
+
+Compiling proves nothing here: a module built against the wrong nginx version
+or the wrong libc compiles cleanly and fails at startup. So every push and pull
+request runs, on a Docker-capable runner, across **every supported nginx version
+and both libcs**:
+
+| | |
+| --- | --- |
+| `make test` | a stock nginx of the target version loads the module, `nginx -t` passes, and one hand-written rule fires — so the test depends on the engine running, not on a rule set being present |
+| `make test-crs` | the pinned OWASP Core Rule Set loads, and SQLi / XSS / LFI / RCE / scanner requests are refused **while ordinary ones are not** — a WAF that blocks everything is as broken as one that blocks nothing |
+| `make report` | a `--no-cache` build, timed, with the artifact image's size and layer count written to the run summary |
+
 ## Documentation
 
 Full docs live in [`docs/`](docs/). Runnable examples live in [`examples/`](examples/).
