@@ -70,12 +70,18 @@ SecUnicodeMapFile unicode.mapping 20127
 SecDebugLogLevel 0
 SecAuditEngine Off
 
-# Anomaly scoring is CRS's whole design: individual rules add to a score, and
-# 949110 refuses the request once it crosses the threshold. Deny at the
-# threshold rather than at the first rule, which is what a real deployment does.
-SecDefaultAction "phase:1,log,auditlog,deny,status:403"
-SecDefaultAction "phase:2,log,auditlog,deny,status:403"
-
+# NO SecDefaultAction here. crs-setup.conf sets one per phase, all `pass`, and
+# a second set in the same context is refused outright:
+#
+#   SecDefaultActions can only be placed once per phase and configuration
+#   context. Phase 1 was informed already.
+#
+# `pass` is also the correct setting, not a concession to that error. Anomaly
+# scoring is CRS's whole design: individual rules ADD to a score and pass, and
+# rule 949110 carries its own explicit `deny,status:403` for when the total
+# crosses the threshold. Making every rule deny would block on the first match
+# instead of at the threshold — which is not how anyone runs CRS, and would
+# make this test pass for the wrong reason.
 Include /etc/nginx/modsecurity/crs/crs-setup.conf
 Include /etc/nginx/modsecurity/crs/rules/*.conf
 CONF

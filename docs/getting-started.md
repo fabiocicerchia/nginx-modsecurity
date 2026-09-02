@@ -207,10 +207,10 @@ The other half. It downloads the pinned OWASP Core Rule Set, verifies the
 tarball by digest, loads all of it at paranoia level 1 with anomaly scoring,
 and asserts per attack class:
 
-| | |
-| --- | --- |
-| SQLi, XSS, LFI, RCE, scanner user-agent | must be refused with **403** |
-| a plain GET, a query string with punctuation, an ordinary browser UA, a path with a dot | must be served with **200** |
+- **Refused with 403** — SQLi, XSS, LFI, RCE, and a scanner user-agent. One
+  per attack class, chosen so each is scored by a different CRS rule file.
+- **Served with 200** — a plain `GET`, a query string with punctuation, an
+  ordinary browser user-agent, and a path with a dot in it.
 
 Both halves of that table matter. A WAF that blocks everything is as broken as
 one that blocks nothing, and it is much easier to ship by accident — only the
