@@ -151,6 +151,8 @@ make build NGINX_VERSION=1.27.5     # compile into a scratch image
 make extract NGINX_VERSION=1.27.5   # write the files to ./dist
 make lint                           # hadolint
 make test                           # loads the module into a stock nginx
+make test-crs                       # ...and the OWASP CRS into that
+make report                         # clean build time and artifact size
 make release                        # multi-arch buildx push
 make clean                          # rm -rf dist
 ```
@@ -192,6 +194,66 @@ and fires one request a single rule should block. Compiling proves nothing here
 — a module built against the wrong version compiles cleanly and fails at
 startup — so this is a load test, not a build test.
 
-**Not yet run.** The Docker daemon was unavailable on the machine this was
-converted on. The build and the test are written and shell-checked; neither has
-executed.
+It uses **one hand-written rule** deliberately, so that what it tests is the
+module rather than the CRS being installed.
+
+### The rule set people actually load
+
+```sh
+make test-crs NGINX_VERSION=1.27.5
+```
+
+The other half. It downloads the pinned OWASP Core Rule Set, verifies the
+tarball by digest, loads all of it at paranoia level 1 with anomaly scoring,
+and asserts per attack class:
+
+- **Refused with 403** — SQLi, XSS, LFI, RCE, and a scanner user-agent. One
+  per attack class, chosen so each is scored by a different CRS rule file.
+- **Served with 200** — a plain `GET`, a query string with punctuation, an
+  ordinary browser user-agent, and a path with a dot in it.
+
+Both halves of that table matter. A WAF that blocks everything is as broken as
+one that blocks nothing, and it is much easier to ship by accident — only the
+negative cases catch it.
+
+`nginx -t` runs first with the full rule set loaded, because a rule the engine
+cannot compile fails there with a file and a line, rather than at whichever
+request first reaches it.
+
+### What this test found on its first run
+
+The location it benchmarks against serves a **real file**, not `return 200`,
+and that is not a stylistic choice.
+
+`return` is a rewrite-phase directive: it answers the request before the
+preaccess phase, which is where ModSecurity-nginx runs its **phase 2** handler.
+Every CRS blocking rule is `phase:2` — 949110 is what evaluates the anomaly
+score — so against a `return 200` location the entire rule set loads, parses,
+reports `rules loaded ... 840`, and is never consulted. Every attack in the
+table above came back `200`, with not one rule line in the error log.
+
+`test.sh` gets away with `return 200` because its single hand-written rule is
+`phase:1`, which does run in the rewrite phase. That is precisely the class of
+gap a one-rule smoke test cannot see: the module loads, a rule fires, and the
+rules an adopter actually depends on never execute.
+
+Kept separate from `make test` because it downloads the rule set: `make test`
+stays the fast answer to *does the module load*.
+
+### Build time and size
+
+```sh
+make report
+```
+
+A `--no-cache` build, timed, then the artifact image's size and layer count. In
+CI it also writes the numbers to the job summary — attached to the run and the
+inputs that produced it, rather than committed to a file where a stale number
+reads like a current one. The size reported is the **artifact** image (the
+module and its library on `scratch`), not a runnable nginx; shipping one of
+those is the thing this project exists not to do.
+
+**Where these have run.** `make test`, `make test-crs` and `make report` run on
+every push and pull request, on GitHub's Docker-capable runners, across every
+supported nginx version and both libc flavours. Before that they had never run
+anywhere — the machine this repo was converted on had no Docker daemon.

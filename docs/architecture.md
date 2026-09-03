@@ -115,8 +115,10 @@ not the source tree the module build needs.
 
 1. `make build NGINX_VERSION=1.29.1` — `BASE` follows automatically.
 2. `make test` loads the module into a stock nginx of that version. That is the
-   only assertion worth having here: a module that compiles and does not load
-   is the normal failure, not the exotic one.
+   assertion most worth having here: a module that compiles and does not load
+   is the normal failure, not the exotic one. `make test-crs` follows it with
+   the real OWASP rule set, which is what catches a module that loads and then
+   cannot compile a rule that uses libinjection or a transformation.
 3. The tag changes, because the tag *is* the version pair.
 
 `MODSECURITY_VERSION` and `MODSECURITY_NGINX_VERSION` move independently of

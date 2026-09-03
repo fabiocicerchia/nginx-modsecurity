@@ -55,3 +55,40 @@ jobs:
             NGINX_VERSION="$NGINX_VERSION" \
             NGINX_SHA256="$NGINX_SHA256" \
             FLAVOUR="$FLAVOUR"
+
+      # test.sh uses one hand-written rule on purpose, so it tests the module
+      # rather than the CRS being present. That leaves the rule set every
+      # consumer actually loads unverified — far larger, and using anomaly
+      # scoring, transformations and libinjection operators that one `@streq`
+      # never touches. This asserts per attack class that a known-bad request
+      # is refused AND that ordinary ones are not: a WAF that blocks everything
+      # is as broken as one that blocks nothing, and only the second half
+      # catches it. The image reuses the build from the step above.
+      - name: Load the OWASP CRS and prove it blocks
+        env:
+          NGINX_VERSION: ${{ matrix.version.nginx }}
+          NGINX_SHA256: ${{ matrix.version.sha256 }}
+          FLAVOUR: ${{ matrix.flavour }}
+        run: |
+          make test-crs \
+            NGINX_VERSION="$NGINX_VERSION" \
+            NGINX_SHA256="$NGINX_SHA256" \
+            FLAVOUR="$FLAVOUR"
+
+  # Size and clean build time, on the default version only: the numbers are the
+  # same shape across the matrix, and a --no-cache build per cell would be six
+  # of them for one answer. Written to the job summary rather than a file in
+  # git, so the record is attached to the inputs that produced it instead of
+  # becoming a stale number that reads like a current one.
+  report:
+    needs: matrix
+    runs-on: ubuntu-latest
+    name: build report
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - name: Measure build time and image size
+        run: |
+          v="$(jq -c '.supported[] | select(.default)' versions.json)"
+          make report \
+            NGINX_VERSION="$(echo "$v" | jq -r .nginx)" \
+            NGINX_SHA256="$(echo "$v" | jq -r .sha256)"

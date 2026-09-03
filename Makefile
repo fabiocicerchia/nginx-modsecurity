@@ -23,7 +23,7 @@ BUILD_ARGS = --build-arg NGINX_VERSION=$(NGINX_VERSION) \
              --build-arg BASE=$(BASE) \
              $(if $(NGINX_SHA256),--build-arg NGINX_SHA256=$(NGINX_SHA256),)
 
-.PHONY: help build extract lint test push release clean print-image print-version
+.PHONY: help build extract lint test test-crs report push release clean print-image print-version
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -42,6 +42,19 @@ lint: ## Lint both Dockerfiles
 
 test: build ## Prove the module loads in a stock nginx of the same version and libc
 	./test.sh $(IMAGE):$(VERSION) $(NGINX_VERSION) $(FLAVOUR)
+
+# Separate from `test` on purpose: this one downloads the rule set, so it needs
+# the network and takes noticeably longer. `test` stays the fast answer to
+# "does the module load".
+test-crs: build ## ...and that the OWASP CRS loads into it and actually blocks
+	./test-crs.sh $(IMAGE):$(VERSION) $(NGINX_VERSION) $(FLAVOUR)
+
+# The two numbers a consumer asks about before adopting an artifact, measured
+# rather than claimed. Writes to $$GITHUB_STEP_SUMMARY when there is one, so
+# every CI run leaves the record rather than one committed file going stale.
+report: ## Measure build time and image size for the current version
+	@./report.sh $(IMAGE) $(VERSION) $(DOCKERFILE) $(NGINX_VERSION) $(FLAVOUR) \
+		$(MODSECURITY_VERSION) $(BASE) $(NGINX_SHA256)
 
 push: build ## Push the artifact image
 	docker push $(IMAGE):$(VERSION)

@@ -17,6 +17,8 @@ make build        # Compile the module into a scratch image
 make extract      # Write the module and its library to ./dist
 make lint         # Lint the Dockerfile
 make test         # Prove the module loads in a stock nginx of the same version
+make test-crs     # ...and that the OWASP CRS loads into it and actually blocks
+make report       # Measure clean build time and artifact image size
 make push         # Push the artifact image
 make release      # Build and push multi-arch
 make clean        # Remove extracted artifacts
@@ -45,6 +47,14 @@ make clean        # Remove extracted artifacts
 
 - Pin every version and leave a `# VERSION-BUMP` comment beside it.
 - `test.sh` runs against the built image — a new capability needs a case there.
+  It uses ONE hand-written rule on purpose, so it tests the module rather than
+  the CRS being present. `test-crs.sh` is the other half: the real rule set,
+  asserted per attack class, with negative cases — a WAF that blocks everything
+  is as broken as one that blocks nothing, and only the negative cases catch it.
+  It serves a real file rather than `return 200`: `return` answers in the
+  rewrite phase, before ModSecurity's phase-2 handler, so against it the whole
+  CRS loads and never runs. That is why `test.sh`'s phase:1 rule passes while
+  every phase:2 CRS rule silently does not.
 - The deliverable is the `.so`, not the image. Keep `make extract` working.
 - The module must match the target nginx version exactly — version skew is the
   failure mode this repo exists to avoid.
