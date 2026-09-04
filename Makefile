@@ -13,9 +13,19 @@ TAG_SUFFIX          ?= $(if $(filter alpine,$(FLAVOUR)),-alpine,)
 VERSION             ?= $(MODSECURITY_VERSION)-nginx$(NGINX_VERSION)$(TAG_SUFFIX)
 PLATFORMS           ?= linux/amd64,linux/arm64
 # Overridable so one checkout can build every supported version — CI passes
-# these from versions.json, which is where the set is defined. Defaulting to
-# the Dockerfile's own pins keeps a bare `make build` unchanged.
-BASE                ?= nginx:$(NGINX_VERSION)-$(FLAVOUR)
+# these from versions.json, which is where the set is defined.
+#
+# The base is pinned by digest, read out of versions.json so the pin lives
+# beside the version it belongs to rather than in a second list that has to
+# agree with the first. A tag alone lets the base move under a rebuild, which
+# is the whole point of pinning it -- but it degrades to the bare tag when jq
+# is missing or the entry carries no digest, so a checkout without jq still
+# builds. `make build BASE_DIGEST=` opts out deliberately; rebuild.yml does
+# exactly that, because tracking the moving tag is its reason to exist.
+BASE_DIGEST         ?= $(shell jq -r --arg v '$(NGINX_VERSION)' --arg f '$(FLAVOUR)' \
+                         '.supported[] | select(.nginx == $$v) | .digest[$$f] // empty' \
+                         versions.json 2>/dev/null)
+BASE                ?= nginx:$(NGINX_VERSION)-$(FLAVOUR)$(if $(BASE_DIGEST),@$(BASE_DIGEST),)
 NGINX_SHA256        ?=
 
 BUILD_ARGS = --build-arg NGINX_VERSION=$(NGINX_VERSION) \

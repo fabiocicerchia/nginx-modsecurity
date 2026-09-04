@@ -1,23 +1,32 @@
 {
-  "_comment": "Supported nginx versions, one build each. Single source of truth: CI reads this to build its matrix, and the checksums are the same ones the Dockerfile verifies before unpacking. Adding a version here is the whole change needed to build and publish it. # VERSION-BUMP",
+  "_comment": "Supported nginx versions, one build each. Single source of truth: CI reads this to build its matrix, the checksums are the same ones the Dockerfile verifies before unpacking, and `digest` pins the base image per libc so a test build is reproducible. Adding a version here is the whole change needed to build and publish it. # VERSION-BUMP",
   "supported": [
     {
       "nginx": "1.28.0",
       "channel": "stable",
-      "base": "nginx:1.28.0-bookworm",
+      "digest": {
+        "bookworm": "sha256:552e7481ca93ffccd046aa658dbbed22caefbc09c66fa7cd247cbb90b8a5c609",
+        "alpine": "sha256:30f1c0d78e0ad60901648be663a710bdadf19e4c10ac6782c235200619158284"
+      },
       "sha256": "c6b5c6b086c0df9d3ca3ff5e084c1d0ef909e6038279c71c1c3e985f576ff76a"
     },
     {
       "nginx": "1.27.5",
       "channel": "mainline",
-      "base": "nginx:1.27.5-bookworm",
+      "digest": {
+        "bookworm": "sha256:6784fb0834aa7dbbe12e3d7471e69c290df3e6ba810dc38b34ae33d3c1c05f7d",
+        "alpine": "sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10"
+      },
       "sha256": "e96acebb9c2a6db8a000c3dd1b32ecba1b810f0cd586232d4d921e376674dd0e",
       "default": true
     },
     {
       "nginx": "1.26.3",
       "channel": "oldstable",
-      "base": "nginx:1.26.3-bookworm",
+      "digest": {
+        "bookworm": "sha256:41b194461e4bae16f9b25d68b0976ed4735b89ca625c89aad88e1c1c3b7e8860",
+        "alpine": "sha256:1eadbb07820339e8bbfed18c771691970baee292ec4ab2558f1453d26153e22d"
+      },
       "sha256": "69ee2b237744036e61d24b836668aad3040dda461fe6f570f1787eab570c75aa"
     }
   ]

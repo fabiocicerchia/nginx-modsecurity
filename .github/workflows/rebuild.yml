@@ -73,6 +73,12 @@ jobs:
 
       # Tested before it is pushed, every time. A rebuild that publishes a
       # module which does not load is worse than a stale one that does.
+      #
+      # `BASE_DIGEST=` deliberately drops the pin that versions.json gives a
+      # normal build. Everywhere else the digest is the point; here the moving
+      # tag is, because picking up the base image's CVE fixes is the only
+      # reason this workflow runs. Pinning it would rebuild the same bytes
+      # every Monday and report success.
       - name: Build and test against the current base
         env:
           NGINX_VERSION: ${{ matrix.version.nginx }}
@@ -80,9 +86,33 @@ jobs:
           FLAVOUR: ${{ matrix.flavour }}
         run: |
           make test \
+            BASE_DIGEST= \
             NGINX_VERSION="$NGINX_VERSION" \
             NGINX_SHA256="$NGINX_SHA256" \
             FLAVOUR="$FLAVOUR"
+
+      # What the tag resolved to on this run. Without it the digests in
+      # versions.json go stale invisibly: CI would keep testing an old base
+      # while this job publishes against a newer one, and nothing would say so.
+      - name: Report the base image digest
+        env:
+          NGINX_VERSION: ${{ matrix.version.nginx }}
+          FLAVOUR: ${{ matrix.flavour }}
+        run: |
+          set -euo pipefail
+          tag="nginx:${NGINX_VERSION}-${FLAVOUR}"
+          # The build above pulled it, so it is in the local store with a
+          # RepoDigest; `|| true` because a missing digest is worth reporting,
+          # not worth failing a rebuild over.
+          digest=$(docker image inspect "$tag" \
+            --format '{{ index .RepoDigests 0 }}' 2>/dev/null | cut -d@ -f2) || true
+          echo "\`$tag\` built against \`${digest:-unknown}\`" >> "$GITHUB_STEP_SUMMARY"
+          pinned=$(jq -r --arg v "$NGINX_VERSION" --arg f "$FLAVOUR" \
+            '.supported[] | select(.nginx == $v) | .digest[$f] // empty' versions.json)
+          if [ -n "$digest" ] && [ -n "$pinned" ] && [ "$digest" != "$pinned" ]; then
+            echo "versions.json still pins \`$pinned\` for this entry — update it to keep CI on the same base." \
+              >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       # Publishing is conditional on the credential existing, so a fork or a
       # repo without it still gets the useful half — an early warning that the
