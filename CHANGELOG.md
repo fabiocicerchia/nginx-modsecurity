@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.2](https://github.com/fabiocicerchia/nginx-modsecurity/compare/v1.2.1...v1.2.2) (2026-09-04)
+
+
+### Bug Fixes
+
+* **ci:** pin the editorconfig-checker binary version ([#43](https://github.com/fabiocicerchia/nginx-modsecurity/issues/43)) ([5ec0794](https://github.com/fabiocicerchia/nginx-modsecurity/commit/5ec0794cf8e26e116221b23c151603481184ad18))
+
 ## [1.2.1](https://github.com/fabiocicerchia/nginx-modsecurity/compare/v1.2.0...v1.2.1) (2026-08-29)
 
 
