@@ -28,7 +28,8 @@ ARG MODSECURITY_NGINX_SHA256=6bdc7570911be884c1e43aaf85046137f9fde0cfa0dd4a55b85
 # you load it into: a module built here on glibc will not load into an
 # nginx:alpine, and the error ("Error loading shared library") does not say so.
 # Build Dockerfile.alpine for that runtime — `make build FLAVOUR=alpine`.
-ARG BASE=nginx:1.27.5-bookworm
+# VERSION-BUMP
+ARG BASE=nginx:1.27.5-bookworm@sha256:6784fb0834aa7dbbe12e3d7471e69c290df3e6ba810dc38b34ae33d3c1c05f7d
 
 FROM ${BASE} AS build
 ARG NGINX_VERSION

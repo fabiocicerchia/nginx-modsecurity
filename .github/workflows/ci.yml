@@ -44,8 +44,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
 
       - name: Build image and run smoke tests
-        # BASE is left to the Makefile, which derives nginx:<version>-<flavour>:
-        # versions.json pins one base per version, not one per libc.
+        # BASE is left to the Makefile, which builds it from the version, the
+        # libc and the matching digest in versions.json — so what CI tests is
+        # one specific base image, not whatever the tag points at today.
         env:
           NGINX_VERSION: ${{ matrix.version.nginx }}
           NGINX_SHA256: ${{ matrix.version.sha256 }}
