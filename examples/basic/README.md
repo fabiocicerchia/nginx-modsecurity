@@ -32,7 +32,7 @@ should start: on for one path, not for the whole site on day one.
 **Both shared objects are copied.** The module links against
 `libmodsecurity.so.3`. Comment out the `/lib/` line and rebuild:
 
-```
+```text
 nginx: [emerg] dlopen() ".../ngx_http_modsecurity_module.so" failed
 (libmodsecurity.so.3: cannot open shared object file: No such file or directory)
 ```
@@ -47,7 +47,7 @@ files present.
 fails the build if the module tag and the base tag stop matching. Without it
 the mismatch shows up at container start:
 
-```
+```text
 nginx: [emerg] module ... version 1027005 instead of 1029001 — not binary compatible
 ```
 
