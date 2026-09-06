@@ -33,11 +33,29 @@ BUILD_ARGS = --build-arg NGINX_VERSION=$(NGINX_VERSION) \
              --build-arg BASE=$(BASE) \
              $(if $(NGINX_SHA256),--build-arg NGINX_SHA256=$(NGINX_SHA256),)
 
-.PHONY: help build extract lint test test-crs report push release clean print-image print-version
+# FC-GEN-057: the same eight verbs in every repo, each either wired or a
+# declared no-op that says why. None of them exit 0 quietly.
+.DEFAULT_GOAL := help
+
+.PHONY: help setup install build run extract lint format analyze test test-crs \
+        report push release clean print-image print-version
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
 	  awk 'BEGIN {FS = ":.*?## "}; {printf "  %-10s %s\n", $$1, $$2}'
+
+setup: ## Install the pre-commit hook
+	pre-commit install
+
+install: ## Pull the published artifact image onto this machine
+	docker pull $(IMAGE):$(VERSION)
+
+# --- Declared no-op (FC-GEN-058) ---
+
+run: ## Not applicable — the artifact is a module, not a program
+	@echo "Nothing to run: the image is a scratch image holding a .so, so it has"
+	@echo "no entrypoint. 'make test' loads the module into a stock nginx, and"
+	@echo "'make extract' writes the files to ./dist. See README > Not applicable."
 
 build: ## Compile the module into a scratch image (FLAVOUR=bookworm|alpine)
 	docker build -f $(DOCKERFILE) $(BUILD_ARGS) -t $(IMAGE):$(VERSION) .
@@ -46,9 +64,22 @@ extract: ## Write the module and its library to ./dist
 	docker build -f $(DOCKERFILE) $(BUILD_ARGS) --output type=local,dest=./dist .
 	@echo "wrote:"; find dist -type f | sed 's/^/  /'
 
-lint: ## Lint both Dockerfiles
-	docker run --rm -i hadolint/hadolint < Dockerfile
-	docker run --rm -i hadolint/hadolint < Dockerfile.alpine
+lint: ## Run the whole gate — every hook, every file
+	pre-commit run --all-files
+
+format: ## Rewrite what the gate can fix: whitespace, line endings, final newline
+	@# A fixing hook exits 1 when it rewrites a file. That is this target doing
+	@# its job, not failing, so the exits are ignored — make still prints what
+	@# each hook said.
+	-pre-commit run --all-files trailing-whitespace
+	-pre-commit run --all-files end-of-file-fixer
+	-pre-commit run --all-files mixed-line-ending
+
+analyze: ## Scan the tree the way CI does — vulnerabilities, misconfig, secrets
+	@command -v trivy >/dev/null 2>&1 || { \
+		echo "analyze needs trivy: https://trivy.dev/latest/getting-started/installation/" >&2; \
+		exit 69; }
+	trivy fs --scanners vuln,misconfig,secret --severity CRITICAL,HIGH .
 
 test: build ## Prove the module loads in a stock nginx of the same version and libc
 	./test.sh $(IMAGE):$(VERSION) $(NGINX_VERSION) $(FLAVOUR)

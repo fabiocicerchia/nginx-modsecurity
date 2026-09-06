@@ -75,6 +75,32 @@ and both libcs**:
 - **`make report`** — a `--no-cache` build, timed, with the artifact image's
   size and layer count written to the run summary.
 
+## Development
+
+### Make targets
+
+`make help` lists them all. Every repository in this estate exposes the same
+eight verbs, so you do not have to read a Makefile to find out how to build or
+test it (FC-GEN-057).
+
+| Verb      | What it does here                                            |
+| --------- | ------------------------------------------------------------ |
+| `setup`   | Install the pre-commit hook                                  |
+| `install` | Pull the published artifact image                            |
+| `build`   | Compile the module into a scratch image                      |
+| `test`    | Load it into a stock nginx of the same version and libc      |
+| `lint`    | `pre-commit run --all-files` — the whole gate                |
+| `format`  | Rewrite what the gate can fix: whitespace, endings, EOF      |
+| `analyze` | `trivy fs` — vulnerabilities, misconfig, secrets             |
+
+Beyond the eight: `extract`, `test-crs`, `report`, `push`, `release`, `clean`.
+
+#### Not applicable
+
+- `run` — the image is a scratch image holding a `.so`, so it has no
+  entrypoint. It exits 0 and says so rather than pretending to work
+  (FC-GEN-058); `make test` is what loads the module into nginx.
+
 ## Documentation
 
 Full docs live in [`docs/`](docs/). Runnable examples live in [`examples/`](examples/).
