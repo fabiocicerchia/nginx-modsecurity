@@ -3,7 +3,7 @@
 A two-stage Dockerfile whose final stage is `scratch`. The output is not an
 image you run; it is a directory of files you take.
 
-```
+```text
 FROM ${BASE}  (nginx:X-bookworm)  AS build
   ├── build libmodsecurity v3            → /usr/local/modsecurity/lib/libmodsecurity.so.3
   ├── ./configure --with-compat
@@ -40,7 +40,7 @@ immediately — which is the intended message. It exists to be
 
 Copy only the module and nginx starts with:
 
-```
+```text
 libmodsecurity.so.3: cannot open shared object file: No such file or directory
 ```
 
@@ -57,7 +57,7 @@ fixes the ABI-signature check that otherwise requires the module to be built by
 the exact same `./configure` invocation. It does not decouple the module from
 the nginx version:
 
-```
+```text
 module "..." version 1027005 instead of 1029001 — not binary compatible
 ```
 
@@ -71,7 +71,7 @@ against the nginx you will load it into.
 
 ## The artifact records what it was built against
 
-```
+```text
 /NGINX_VERSION           1.27.5
 /MODSECURITY_VERSION     3.0.14
 ```
@@ -114,12 +114,12 @@ not the source tree the module build needs.
 ## Bumping versions
 
 1. `make build NGINX_VERSION=1.29.1` — `BASE` follows automatically.
-2. `make test` loads the module into a stock nginx of that version. That is the
+1. `make test` loads the module into a stock nginx of that version. That is the
    assertion most worth having here: a module that compiles and does not load
    is the normal failure, not the exotic one. `make test-crs` follows it with
    the real OWASP rule set, which is what catches a module that loads and then
    cannot compile a rule that uses libinjection or a transformation.
-3. The tag changes, because the tag *is* the version pair.
+1. The tag changes, because the tag *is* the version pair.
 
 `MODSECURITY_VERSION` and `MODSECURITY_NGINX_VERSION` move independently of
 nginx; a bump to either is a new tag against the same nginx version.

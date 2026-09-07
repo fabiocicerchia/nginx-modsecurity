@@ -102,10 +102,10 @@ which does not say which libc it wanted.
 is mostly `libmodsecurity.so.3` either way. The saving is in the image you load
 it into:
 
-| runtime with the module | size |
-|---|---|
-| `nginx:1.27.5-bookworm` | 364 MB |
-| `nginx:1.27.5-alpine` | **158 MB** |
+| runtime with the module | size       |
+| ----------------------- | ---------- |
+| `nginx:1.27.5-bookworm` | 364 MB     |
+| `nginx:1.27.5-alpine`   | **158 MB** |
 
 206 MB, or 57%, measured on the images the test suite builds.
 
@@ -135,11 +135,11 @@ Both are in `test.sh`, which is the copy worth following.
 it, and the published tag names the nginx version the module was compiled
 against:
 
-| nginx | channel | tag |
-|---|---|---|
-| 1.28.0 | stable | `3.0.14-nginx1.28.0` |
-| 1.27.5 | mainline | `3.0.14-nginx1.27.5` — also `latest` |
-| 1.26.3 | oldstable | `3.0.14-nginx1.26.3` |
+| nginx  | channel   | tag                                  |
+| ------ | --------- | ------------------------------------ |
+| 1.28.0 | stable    | `3.0.14-nginx1.28.0`                 |
+| 1.27.5 | mainline  | `3.0.14-nginx1.27.5` — also `latest` |
+| 1.26.3 | oldstable | `3.0.14-nginx1.26.3`                 |
 
 Every version is built for both libcs; the musl tag is the same name with
 `-alpine` appended, e.g. `3.0.14-nginx1.28.0-alpine`.

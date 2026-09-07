@@ -99,7 +99,7 @@ way to roll it out: on for one path first, not for everything at once.
 
 **`module ... is not binary compatible`**
 
-```
+```text
 nginx: [emerg] module "ngx_http_modsecurity_module.so" version 1027005
 instead of 1029001 in /etc/nginx/nginx.conf
 ```
