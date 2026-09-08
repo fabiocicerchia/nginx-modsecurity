@@ -83,15 +83,15 @@ and both libcs**:
 eight verbs, so you do not have to read a Makefile to find out how to build or
 test it (FC-GEN-057).
 
-| Verb      | What it does here                                            |
-| --------- | ------------------------------------------------------------ |
-| `setup`   | Install the pre-commit hook                                  |
-| `install` | Pull the published artifact image                            |
-| `build`   | Compile the module into a scratch image                      |
-| `test`    | Load it into a stock nginx of the same version and libc      |
-| `lint`    | `pre-commit run --all-files` — the whole gate                |
-| `format`  | Rewrite what the gate can fix: whitespace, endings, EOF      |
-| `analyze` | `trivy fs` — vulnerabilities, misconfig, secrets             |
+| Verb      | What it does here                                       |
+| --------- | ------------------------------------------------------- |
+| `setup`   | Install the pre-commit hook                             |
+| `install` | Pull the published artifact image                       |
+| `build`   | Compile the module into a scratch image                 |
+| `test`    | Load it into a stock nginx of the same version and libc |
+| `lint`    | `pre-commit run --all-files` — the whole gate           |
+| `format`  | Rewrite what the gate can fix: whitespace, endings, EOF |
+| `analyze` | `trivy fs` — vulnerabilities, misconfig, secrets        |
 
 Beyond the eight: `extract`, `test-crs`, `report`, `push`, `release`, `clean`.
 
