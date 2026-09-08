@@ -4,7 +4,7 @@ A two-stage Dockerfile whose final stage is `scratch`. The output is not an
 image you run; it is a directory of files you take.
 
 ```text
-FROM ${BASE}  (nginx:X-bookworm)  AS build
+FROM ${BASE}  (nginx:X)  AS build
   ├── build libmodsecurity v3            → /usr/local/modsecurity/lib/libmodsecurity.so.3
   ├── ./configure --with-compat
   │     --add-dynamic-module=ModSecurity-nginx
@@ -73,7 +73,7 @@ against the nginx you will load it into.
 
 ```text
 /NGINX_VERSION           1.27.5
-/MODSECURITY_VERSION     3.0.14
+/MODSECURITY_VERSION     3.0.16
 ```
 
 Plain files, so a consumer's Dockerfile or CI step can assert rather than
@@ -83,7 +83,7 @@ assume:
 RUN test "$(cat /NGINX_VERSION)" = "1.27.5"
 ```
 
-The image tag carries the same pair (`3.0.14-nginx1.27.5`), and
+The image tag carries the same pair (`3.0.16-nginx1.27.5`), and
 `org.opencontainers.image.version` repeats it. Three copies of the same fact,
 because the failure it prevents is one that appears at nginx start rather than
 at build.
@@ -103,7 +103,7 @@ CRS is one `COPY` and one `Include` away for anyone who wants it.
 
 ## Why the build happens on the nginx image itself
 
-`FROM ${BASE} AS build` where `BASE` is `nginx:1.27.5-bookworm` — the build
+`FROM ${BASE} AS build` where `BASE` is `nginx:1.27.5` — the build
 runs on the same base the module will be loaded into. That guarantees the libc,
 the OpenSSL and the PCRE the module links against are the ones present at
 runtime, rather than approximately the ones.

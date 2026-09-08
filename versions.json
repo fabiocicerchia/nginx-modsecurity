@@ -1,11 +1,20 @@
 {
-  "_comment": "Supported nginx versions, one build each. Single source of truth: CI reads this to build its matrix, the checksums are the same ones the Dockerfile verifies before unpacking, and `digest` pins the base image per libc so a test build is reproducible. Adding a version here is the whole change needed to build and publish it. # VERSION-BUMP",
+  "_comment": "Supported nginx versions, one build each. Single source of truth: CI reads this to build its matrix, the checksums are the same ones the Dockerfile verifies before unpacking, and `digest` pins the base image per libc so a test build is reproducible: `debian` is the bare `nginx:<version>` tag (the Debian variant, whichever Debian release that is this year) and `alpine` is `nginx:<version>-alpine`. Adding a version here is the whole change needed to build and publish it. # VERSION-BUMP",
   "supported": [
+    {
+      "nginx": "1.31.4",
+      "channel": "mainline",
+      "digest": {
+        "debian": "sha256:b34848eff6db786b6b1282d3a9c3fd0b5563dfb6d261df4923378b419e0d24f0",
+        "alpine": "sha256:db35bfc6b2951e7f8a72db5db120288c127ffaeeb4a6d4b95a26fead017d5913"
+      },
+      "sha256": "e6f20b644a17a643f059ae6467a1971fe2811587d025e071068753a1f1e3b3c3"
+    },
     {
       "nginx": "1.28.0",
       "channel": "stable",
       "digest": {
-        "bookworm": "sha256:552e7481ca93ffccd046aa658dbbed22caefbc09c66fa7cd247cbb90b8a5c609",
+        "debian": "sha256:552e7481ca93ffccd046aa658dbbed22caefbc09c66fa7cd247cbb90b8a5c609",
         "alpine": "sha256:30f1c0d78e0ad60901648be663a710bdadf19e4c10ac6782c235200619158284"
       },
       "sha256": "c6b5c6b086c0df9d3ca3ff5e084c1d0ef909e6038279c71c1c3e985f576ff76a"
@@ -14,7 +23,7 @@
       "nginx": "1.27.5",
       "channel": "mainline",
       "digest": {
-        "bookworm": "sha256:6784fb0834aa7dbbe12e3d7471e69c290df3e6ba810dc38b34ae33d3c1c05f7d",
+        "debian": "sha256:6784fb0834aa7dbbe12e3d7471e69c290df3e6ba810dc38b34ae33d3c1c05f7d",
         "alpine": "sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10"
       },
       "sha256": "e96acebb9c2a6db8a000c3dd1b32ecba1b810f0cd586232d4d921e376674dd0e",
@@ -24,7 +33,7 @@
       "nginx": "1.26.3",
       "channel": "oldstable",
       "digest": {
-        "bookworm": "sha256:41b194461e4bae16f9b25d68b0976ed4735b89ca625c89aad88e1c1c3b7e8860",
+        "debian": "sha256:41b194461e4bae16f9b25d68b0976ed4735b89ca625c89aad88e1c1c3b7e8860",
         "alpine": "sha256:1eadbb07820339e8bbfed18c771691970baee292ec4ab2558f1453d26153e22d"
       },
       "sha256": "69ee2b237744036e61d24b836668aad3040dda461fe6f570f1787eab570c75aa"

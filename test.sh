@@ -12,7 +12,7 @@ NGINX_VERSION="${2:?usage: test.sh <artifact-image:tag> <nginx-version> [flavour
 # Which nginx the module is loaded into. The libc has to match the one it was
 # built against — that mismatch is the single most common way this artifact
 # fails, and it fails at startup with an error that does not name the libc.
-FLAVOUR="${3:-bookworm}"
+FLAVOUR="${3:-debian}"
 
 WORK="$(mktemp -d)"
 cleanup() {
@@ -65,7 +65,7 @@ CONF
 else
   cat > "$WORK/Dockerfile" <<CONF
 FROM ${ARTIFACT} AS module
-FROM nginx:${NGINX_VERSION}-bookworm
+FROM nginx:${NGINX_VERSION}
 RUN apt-get update \\
  && apt-get install -y --no-install-recommends libcurl4 libgeoip1 liblmdb0 libxml2 libyajl2 \\
  && rm -rf "/var/lib/apt/lists"

@@ -38,7 +38,7 @@ jobs:
       fail-fast: false
       matrix:
         version: ${{ fromJSON(needs.matrix.outputs.versions) }}
-        flavour: [bookworm, alpine]
+        flavour: [debian, alpine]
     name: test (nginx ${{ matrix.version.nginx }} ${{ matrix.flavour }})
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
