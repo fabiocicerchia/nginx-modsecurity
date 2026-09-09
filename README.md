@@ -130,7 +130,7 @@ it into:
 
 | runtime with the module | size       |
 | ----------------------- | ---------- |
-| `nginx:1.27.5` | 364 MB     |
+| `nginx:1.27.5`          | 364 MB     |
 | `nginx:1.27.5-alpine`   | **158 MB** |
 
 206 MB, or 57%, measured on the images the test suite builds.
