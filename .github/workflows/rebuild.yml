@@ -66,7 +66,7 @@ jobs:
       fail-fast: false
       matrix:
         version: ${{ fromJSON(needs.matrix.outputs.versions) }}
-        flavour: [bookworm, alpine]
+        flavour: [debian, alpine]
     name: rebuild (nginx ${{ matrix.version.nginx }} ${{ matrix.flavour }})
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -100,7 +100,7 @@ jobs:
           FLAVOUR: ${{ matrix.flavour }}
         run: |
           set -euo pipefail
-          tag="nginx:${NGINX_VERSION}-${FLAVOUR}"
+          tag="$(make -s print-base NGINX_VERSION="$NGINX_VERSION" FLAVOUR="$FLAVOUR")"
           # The build above pulled it, so it is in the local store with a
           # RepoDigest; `|| true` because a missing digest is worth reporting,
           # not worth failing a rebuild over.

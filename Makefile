@@ -3,11 +3,16 @@
 # files than a registry.
 IMAGE               ?= fabiocicerchia/nginx-modsecurity-module
 NGINX_VERSION       ?= 1.27.5
-MODSECURITY_VERSION ?= 3.0.14
-# bookworm (glibc) or alpine (musl). The module can only be loaded into a
+MODSECURITY_VERSION ?= 3.0.16
+# debian (glibc) or alpine (musl). The module can only be loaded into a
 # runtime with the same libc, so the flavour is part of the tag rather than
 # something a consumer has to remember.
-FLAVOUR             ?= bookworm
+#
+# `debian` builds on the bare `nginx:<version>` tag, not on `-bookworm`: the
+# codename tag is retired when Debian moves on, so `nginx:1.31.4-bookworm`
+# simply does not exist. The bare tag is the Debian variant for every version
+# past and future, and resolves to the same digest as the codename tag did.
+FLAVOUR             ?= debian
 DOCKERFILE          ?= $(if $(filter alpine,$(FLAVOUR)),Dockerfile.alpine,Dockerfile)
 TAG_SUFFIX          ?= $(if $(filter alpine,$(FLAVOUR)),-alpine,)
 VERSION             ?= $(MODSECURITY_VERSION)-nginx$(NGINX_VERSION)$(TAG_SUFFIX)
@@ -25,7 +30,8 @@ PLATFORMS           ?= linux/amd64,linux/arm64
 BASE_DIGEST         ?= $(shell jq -r --arg v '$(NGINX_VERSION)' --arg f '$(FLAVOUR)' \
                          '.supported[] | select(.nginx == $$v) | .digest[$$f] // empty' \
                          versions.json 2>/dev/null)
-BASE                ?= nginx:$(NGINX_VERSION)-$(FLAVOUR)$(if $(BASE_DIGEST),@$(BASE_DIGEST),)
+BASE_TAG            ?= nginx:$(NGINX_VERSION)$(if $(filter alpine,$(FLAVOUR)),-alpine,)
+BASE                ?= $(BASE_TAG)$(if $(BASE_DIGEST),@$(BASE_DIGEST),)
 NGINX_SHA256        ?=
 
 BUILD_ARGS = --build-arg NGINX_VERSION=$(NGINX_VERSION) \
@@ -38,7 +44,7 @@ BUILD_ARGS = --build-arg NGINX_VERSION=$(NGINX_VERSION) \
 .DEFAULT_GOAL := help
 
 .PHONY: help setup install build run extract lint format analyze test test-crs \
-        report push release clean print-image print-version
+        report push release clean print-image print-version print-base
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -57,7 +63,7 @@ run: ## Not applicable — the artifact is a module, not a program
 	@echo "no entrypoint. 'make test' loads the module into a stock nginx, and"
 	@echo "'make extract' writes the files to ./dist. See README > Not applicable."
 
-build: ## Compile the module into a scratch image (FLAVOUR=bookworm|alpine)
+build: ## Compile the module into a scratch image (FLAVOUR=debian|alpine)
 	docker build -f $(DOCKERFILE) $(BUILD_ARGS) -t $(IMAGE):$(VERSION) .
 
 extract: ## Write the module and its library to ./dist
@@ -114,3 +120,6 @@ print-image: ## Print the image name
 
 print-version: ## Print the tag for the current NGINX_VERSION
 	@echo $(VERSION)
+
+print-base: ## Print the base image tag this FLAVOUR builds against
+	@echo $(BASE_TAG)

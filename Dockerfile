@@ -11,7 +11,7 @@
 # "libmodsecurity.so.3: cannot open shared object file" the first time nginx
 # starts, which is a confusing way to learn this.
 ARG NGINX_VERSION=1.27.5
-ARG MODSECURITY_VERSION=3.0.14
+ARG MODSECURITY_VERSION=3.0.16
 ARG MODSECURITY_NGINX_VERSION=1.0.4
 # SHA-256 of each source tarball. A pinned version says which artifact is asked
 # for; it says nothing about the bytes that arrive. This is a WAF built from
@@ -21,15 +21,18 @@ ARG MODSECURITY_NGINX_VERSION=1.0.4
 # VERSION-BUMP
 ARG NGINX_SHA256=e96acebb9c2a6db8a000c3dd1b32ecba1b810f0cd586232d4d921e376674dd0e
 # VERSION-BUMP
-ARG MODSECURITY_SHA256=f7599057b35e67ab61764265daddf9ab03c35cee1e55527547afb073ce8f04e8
+ARG MODSECURITY_SHA256=739be3c71b1939f14e91afe1eeae654acbd440da11bd29790458840bc315b4c0
 # VERSION-BUMP
 ARG MODSECURITY_NGINX_SHA256=6bdc7570911be884c1e43aaf85046137f9fde0cfa0dd4a55b853c81c45a13313
 # The base the module is compiled against. It must match the libc of the image
 # you load it into: a module built here on glibc will not load into an
 # nginx:alpine, and the error ("Error loading shared library") does not say so.
 # Build Dockerfile.alpine for that runtime — `make build FLAVOUR=alpine`.
+#
+# The bare `nginx:<version>` tag is the Debian variant; `-bookworm` is not used
+# because that codename tag stops being published when Debian moves on.
 # VERSION-BUMP
-ARG BASE=nginx:1.27.5-bookworm@sha256:6784fb0834aa7dbbe12e3d7471e69c290df3e6ba810dc38b34ae33d3c1c05f7d
+ARG BASE=nginx:1.27.5@sha256:6784fb0834aa7dbbe12e3d7471e69c290df3e6ba810dc38b34ae33d3c1c05f7d
 
 FROM ${BASE} AS build
 ARG NGINX_VERSION

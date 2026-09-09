@@ -9,7 +9,7 @@ Dockerfile, the build wiring and the trimmed configuration. The published
 artifact itself contains nothing but upstream software, redistributed
 under its own terms:
 
-  ModSecurity 3.0.14        Apache-2.0  https://github.com/owasp-modsecurity/ModSecurity
+  ModSecurity 3.0.16        Apache-2.0  https://github.com/owasp-modsecurity/ModSecurity
     -> libmodsecurity.so.3 (built from the upstream release tarball)
   ModSecurity-nginx 1.0.4   Apache-2.0  https://github.com/owasp-modsecurity/ModSecurity-nginx
     -> ngx_http_modsecurity_module.so
@@ -39,6 +39,6 @@ https://nginx.org/LICENSE
 
 Corresponding sources are the release tarballs pinned in the Dockerfile:
 
-  https://github.com/owasp-modsecurity/ModSecurity/releases/download/v3.0.14/modsecurity-v3.0.14.tar.gz
+  https://github.com/owasp-modsecurity/ModSecurity/releases/download/v3.0.16/modsecurity-v3.0.16.tar.gz
   https://github.com/owasp-modsecurity/ModSecurity-nginx/releases/download/v1.0.4/modsecurity-nginx-v1.0.4.tar.gz
   https://nginx.org/download/nginx-1.27.5.tar.gz

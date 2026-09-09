@@ -11,7 +11,7 @@ The module must be built against the same nginx version and the same libc as
 the image you load it into. Find out what you are running:
 
 ```sh
-docker run --rm nginx:1.27.5-bookworm nginx -v
+docker run --rm nginx:1.27.5 nginx -v
 # nginx version: nginx/1.27.5
 ```
 
@@ -43,9 +43,9 @@ does not point at the missing half.
 ## Option B — `COPY --from` in your own image
 
 ```dockerfile
-FROM fabiocicerchia/nginx-modsecurity-module:3.0.14-nginx1.27.5 AS modsec
+FROM fabiocicerchia/nginx-modsecurity-module:3.0.16-nginx1.27.5 AS modsec
 
-FROM nginx:1.27.5-bookworm
+FROM nginx:1.27.5
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
       libcurl4 libgeoip1 liblmdb0 libxml2 libyajl2 \
@@ -61,7 +61,7 @@ The runtime packages are the shared libraries libmodsecurity links against —
 the `-dev` versions were only needed to build it. `ldconfig` is what makes the
 loader find `libmodsecurity.so.3` in a non-standard directory.
 
-The base tag here (`nginx:1.27.5-bookworm`) must match the tag the module was
+The base tag here (`nginx:1.27.5`, the Debian variant) must match the nginx the module was
 built against. Assert it rather than remember it:
 
 ```dockerfile

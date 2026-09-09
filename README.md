@@ -26,9 +26,9 @@ docker pull fabiocicerchia/nginx-modsecurity-module:$(MODSECURITY_VERSION)-nginx
 Copy the module into your own image:
 
 ```dockerfile
-FROM fabiocicerchia/nginx-modsecurity-module:3.0.14-nginx1.27.5 AS modsec
+FROM fabiocicerchia/nginx-modsecurity-module:3.0.16-nginx1.27.5 AS modsec
 
-FROM nginx:1.27.5-bookworm
+FROM nginx:1.27.5
 RUN apt-get update \
  && apt-get install -y --no-install-recommends libcurl4 libgeoip1 liblmdb0 libxml2 libyajl2 \
  && rm -rf /var/lib/apt/lists/*
@@ -116,8 +116,8 @@ The module is a compiled artifact, so it can only be loaded into a runtime with
 the same libc. Both are built:
 
 ```sh
-make build                    # glibc  -> 3.0.14-nginx1.27.5
-make build FLAVOUR=alpine     # musl   -> 3.0.14-nginx1.27.5-alpine
+make build                    # glibc  -> 3.0.16-nginx1.27.5
+make build FLAVOUR=alpine     # musl   -> 3.0.16-nginx1.27.5-alpine
 ```
 
 The flavour is in the tag rather than left for a consumer to remember, because
@@ -130,7 +130,7 @@ it into:
 
 | runtime with the module | size       |
 | ----------------------- | ---------- |
-| `nginx:1.27.5-bookworm` | 364 MB     |
+| `nginx:1.27.5` | 364 MB     |
 | `nginx:1.27.5-alpine`   | **158 MB** |
 
 206 MB, or 57%, measured on the images the test suite builds.
@@ -161,20 +161,29 @@ Both are in `test.sh`, which is the copy worth following.
 it, and the published tag names the nginx version the module was compiled
 against:
 
-| nginx  | channel   | tag                                  |
-| ------ | --------- | ------------------------------------ |
-| 1.28.0 | stable    | `3.0.14-nginx1.28.0`                 |
-| 1.27.5 | mainline  | `3.0.14-nginx1.27.5` — also `latest` |
-| 1.26.3 | oldstable | `3.0.14-nginx1.26.3`                 |
+| nginx  | channel       | tag                                  |
+| ------ | ------------- | ------------------------------------ |
+| 1.31.4 | mainline      | `3.0.16-nginx1.31.4`                 |
+| 1.28.0 | stable        | `3.0.16-nginx1.28.0`                 |
+| 1.27.5 | old mainline  | `3.0.16-nginx1.27.5` — also `latest` |
+| 1.26.3 | oldstable     | `3.0.16-nginx1.26.3`                 |
 
 Every version is built for both libcs; the musl tag is the same name with
-`-alpine` appended, e.g. `3.0.14-nginx1.28.0-alpine`.
+`-alpine` appended, e.g. `3.0.16-nginx1.28.0-alpine`.
 
 The tag names the version because loading a module into a different one fails
-at startup with `module ... is not binary compatible`, which does not say that
-is what happened. `latest` follows the default version only — a rolling tag
-that moved with whichever matrix job finished last would be a different nginx
-each week.
+at startup with `module ... version 1028000 instead of 1031004`, which is
+nginx's way of saying the two were not compiled together.
+
+**Check the version, not the image.** An nginx that is not called nginx still
+has an nginx version: OpenResty-based images (`fabiocicerchia/nginx-lua`, and
+anything built on `openresty/openresty`) embed a specific one, and the module
+has to be built against that exact version. `nginx -v` on the base you intend
+to load it into is the only thing that settles it — a build for 1.28.0 is
+refused by 1.31.4 as firmly as by a different libc.
+
+`latest` follows the default version only — a rolling tag that moved with
+whichever matrix job finished last would be a different nginx each week.
 
 Adding a version is one edit to `versions.json`: the checksum there is the same
 one the Dockerfile verifies before unpacking, so a version cannot be built

@@ -18,7 +18,7 @@ set -eu
 
 ARTIFACT="${1:?usage: test-crs.sh <artifact-image:tag> <nginx-version> [flavour]}"
 NGINX_VERSION="${2:?usage: test-crs.sh <artifact-image:tag> <nginx-version> [flavour]}"
-FLAVOUR="${3:-bookworm}"
+FLAVOUR="${3:-debian}"
 
 # Pinned, and verified by digest before it is unpacked — this image exists to
 # verify other people's supply chains, so it does not get to be sloppy about
@@ -123,7 +123,7 @@ CONF
 else
   cat > "$WORK/Dockerfile" <<CONF
 FROM ${ARTIFACT} AS module
-FROM nginx:${NGINX_VERSION}-bookworm
+FROM nginx:${NGINX_VERSION}
 RUN apt-get update \\
  && apt-get install -y --no-install-recommends libcurl4 libgeoip1 liblmdb0 libxml2 libyajl2 \\
  && rm -rf "/var/lib/apt/lists"
