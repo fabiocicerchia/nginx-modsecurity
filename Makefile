@@ -1,7 +1,10 @@
 # The artifact is the module, not an image. `build` produces a scratch image
 # holding it; `extract` writes it to ./dist for consumers who would rather have
 # files than a registry.
-IMAGE               ?= fabiocicerchia/nginx-modsecurity-module
+# GHCR by default: it authenticates with the token every checkout and workflow
+# already has, so `make push` needs no credential to be configured first. The
+# Docker Hub mirror is the same image under `IMAGE=fabiocicerchia/...`.
+IMAGE               ?= ghcr.io/fabiocicerchia/nginx-modsecurity-module
 NGINX_VERSION       ?= 1.27.5
 MODSECURITY_VERSION ?= 3.0.16
 # debian (glibc) or alpine (musl). The module can only be loaded into a
