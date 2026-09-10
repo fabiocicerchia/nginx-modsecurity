@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.1](https://github.com/fabiocicerchia/nginx-modsecurity/compare/v1.4.0...v1.4.1) (2026-09-10)
+
+
+### Bug Fixes
+
+* **rebuild:** sign the Docker Hub copy as well as the GHCR one ([#61](https://github.com/fabiocicerchia/nginx-modsecurity/issues/61)) ([c7b3425](https://github.com/fabiocicerchia/nginx-modsecurity/commit/c7b3425782cb57f0591090434cf42ccf5216bb9c))
+
 ## [1.4.0](https://github.com/fabiocicerchia/nginx-modsecurity/compare/v1.3.0...v1.4.0) (2026-09-10)
 
 
