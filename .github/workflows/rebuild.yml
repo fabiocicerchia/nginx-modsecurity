@@ -186,6 +186,27 @@ jobs:
             NGINX_SHA256="$NGINX_SHA256" \
             FLAVOUR="$FLAVOUR"
 
+      # The same bytes at the same digest, but a cosign signature is stored as
+      # an artifact beside the image it signs — in that registry. So the GHCR
+      # signature above does not cover this copy, and verifying it reports no
+      # signatures found. Gated on the same login as the push: with no
+      # credential nothing was pushed here, and there is nothing to sign.
+      - name: Sign the Docker Hub digest
+        if: ${{ steps.login.outcome == 'success' }}
+        env:
+          NGINX_VERSION: ${{ matrix.version.nginx }}
+          FLAVOUR: ${{ matrix.flavour }}
+          DOCKERHUB_IMAGE: fabiocicerchia/nginx-modsecurity-module
+        run: |
+          VERSION=$(make -s print-version NGINX_VERSION="$NGINX_VERSION" FLAVOUR="$FLAVOUR")
+          # Docker Hub entries in RepoDigests carry no registry host, so match
+          # the bare repository as well as the qualified form.
+          DIGEST=$(docker image inspect "$DOCKERHUB_IMAGE:$VERSION" \
+            --format '{{range .RepoDigests}}{{println .}}{{end}}' \
+            | grep -E "^(docker\.io/)?${DOCKERHUB_IMAGE}@" | head -n1 | cut -d@ -f2)
+          [ -n "$DIGEST" ] || { echo "::error::no Docker Hub digest after push"; exit 1; }
+          cosign sign --yes "docker.io/${DOCKERHUB_IMAGE}@${DIGEST}"
+
       # `latest` follows the default version only. A rolling tag that moved with
       # whichever matrix job finished last would be a different nginx each week.
       #
