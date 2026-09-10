@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0](https://github.com/fabiocicerchia/nginx-modsecurity/compare/v1.3.0...v1.4.0) (2026-09-10)
+
+
+### Features
+
+* **publish:** publish the artifact to GHCR, signed ([#59](https://github.com/fabiocicerchia/nginx-modsecurity/issues/59)) ([9a2a798](https://github.com/fabiocicerchia/nginx-modsecurity/commit/9a2a7982b1e6ab9096190329f15bea314c119341))
+
 ## [1.3.0](https://github.com/fabiocicerchia/nginx-modsecurity/compare/v1.2.2...v1.3.0) (2026-09-09)
 
 
