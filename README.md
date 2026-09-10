@@ -17,16 +17,29 @@ cannot easily build yourself and leaves the rest alone.
 ## Install
 
 ```sh
-make build                       # builds fabiocicerchia/nginx-modsecurity-module:$(MODSECURITY_VERSION)-nginx$(NGINX_VERSION) locally
-docker pull fabiocicerchia/nginx-modsecurity-module:$(MODSECURITY_VERSION)-nginx$(NGINX_VERSION)
+make build                       # builds ghcr.io/fabiocicerchia/nginx-modsecurity-module:$(MODSECURITY_VERSION)-nginx$(NGINX_VERSION) locally
+docker pull ghcr.io/fabiocicerchia/nginx-modsecurity-module:$(MODSECURITY_VERSION)-nginx$(NGINX_VERSION)
 ```
+
+The published artifact comes from the weekly rebuild, and is signed with cosign
+against that workflow's identity:
+
+```sh
+cosign verify ghcr.io/fabiocicerchia/nginx-modsecurity-module:3.0.16-nginx1.27.5 \
+  --certificate-identity-regexp \
+    'https://github.com/fabiocicerchia/nginx-modsecurity/.github/workflows/.*' \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com
+```
+
+`make build` needs nothing published at all — the artifact is compiled from the
+checkout, which is also how the compatibility matrix is tested.
 
 ## Use it
 
 Copy the module into your own image:
 
 ```dockerfile
-FROM fabiocicerchia/nginx-modsecurity-module:3.0.16-nginx1.27.5 AS modsec
+FROM ghcr.io/fabiocicerchia/nginx-modsecurity-module:3.0.16-nginx1.27.5 AS modsec
 
 FROM nginx:1.27.5
 RUN apt-get update \

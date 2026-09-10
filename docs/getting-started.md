@@ -43,7 +43,7 @@ does not point at the missing half.
 ## Option B — `COPY --from` in your own image
 
 ```dockerfile
-FROM fabiocicerchia/nginx-modsecurity-module:3.0.16-nginx1.27.5 AS modsec
+FROM ghcr.io/fabiocicerchia/nginx-modsecurity-module:3.0.16-nginx1.27.5 AS modsec
 
 FROM nginx:1.27.5
 RUN apt-get update \
