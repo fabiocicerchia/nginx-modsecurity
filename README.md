@@ -14,6 +14,23 @@ Shipping a whole WAF image means inheriting someone else's nginx: their base,
 their version, their config layout, their patch cadence. This ships the part you
 cannot easily build yourself and leaves the rest alone.
 
+## Features
+
+- Ships the **ModSecurity v3 dynamic module as an artifact** — a `.so` you
+  load into your own nginx, not another nginx image to adopt.
+- Leaves your base image, nginx version, config layout and patch cadence
+  alone; it provides only the part you cannot easily build yourself.
+- Take it from the registry as a build stage, or `make extract` the files
+  directly with no registry involved.
+- Built for **every supported nginx version and both libcs**, because a module
+  built against the wrong one compiles cleanly and then fails at startup.
+- CI proves the thing that matters on every push: a stock nginx of the target
+  version actually loads the module.
+- Rebuilt weekly and **signed with cosign** against the publishing workflow's
+  identity.
+- `make build` needs nothing published — the artifact compiles from the
+  checkout, which is also how the compatibility matrix is tested.
+
 ## Install
 
 ```sh
