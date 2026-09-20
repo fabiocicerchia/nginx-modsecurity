@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.2](https://github.com/fabiocicerchia/nginx-modsecurity/compare/v1.4.1...v1.4.2) (2026-09-20)
+
+
+### Bug Fixes
+
+* **ci:** keep actions: read on the job that uploads sarif ([#73](https://github.com/fabiocicerchia/nginx-modsecurity/issues/73)) ([9b3c8bc](https://github.com/fabiocicerchia/nginx-modsecurity/commit/9b3c8bc13e728b219e31487fcbc8dca6e73937a3))
+
 ## [1.4.1](https://github.com/fabiocicerchia/nginx-modsecurity/compare/v1.4.0...v1.4.1) (2026-09-10)
 
 
