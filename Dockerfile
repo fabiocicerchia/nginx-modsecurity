@@ -47,6 +47,10 @@ ARG MODSECURITY_NGINX_SHA256
 # pipefail stays on for everything else that pipes.
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
+# Unpinned on purpose, as .hadolint.yaml (DL3008) records: the digest on BASE
+# pins the build, and exact Debian versions vanish from the mirror on the next
+# security update, breaking every rebuild.
+# kics-scan ignore-block
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl gcc g++ make automake libtool pkgconf \
       libcurl4-openssl-dev libgeoip-dev liblmdb-dev libpcre2-dev \
@@ -121,3 +125,5 @@ LABEL org.opencontainers.image.title="nginx-modsecurity-module" \
       org.opencontainers.image.licenses="Apache-2.0" \
       org.opencontainers.image.source="https://github.com/fabiocicerchia/nginx-modsecurity"
 COPY --from=build /out/ /
+# Nothing here runs, so there is nothing to check.
+HEALTHCHECK NONE

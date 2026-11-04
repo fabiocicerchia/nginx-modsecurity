@@ -11,7 +11,9 @@ FROM nginx:1.27.5@sha256:6784fb0834aa7dbbe12e3d7471e69c290df3e6ba810dc38b34ae33d
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # The runtime halves of what libmodsecurity links against. The -dev packages
-# were only needed to build it.
+# were only needed to build it. Unpinned on purpose: the digest on FROM pins
+# the base, and exact Debian versions vanish on the next security update.
+# kics-scan ignore-block
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
       libcurl4 libgeoip1 liblmdb0 libxml2 libyajl2 \
@@ -39,3 +41,8 @@ RUN printf '%s\n' \
   >> /etc/nginx/modsecurity/modsecurity.conf
 
 COPY nginx.conf /etc/nginx/nginx.conf
+
+# Unprivileged: nginx.conf listens on 8080 and keeps its pid and temp files in
+# /tmp, the only places the nginx user can write.
+USER nginx
+HEALTHCHECK CMD ["curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/"]
