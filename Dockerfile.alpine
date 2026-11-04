@@ -58,6 +58,10 @@ SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 # configure fails late and unhelpfully without it. libxml2-dev brings the
 # headers the parser needs; yajl-dev is in community, which nginx:alpine has
 # enabled.
+# Unpinned on purpose, as .hadolint.yaml (DL3018) records: the digest on BASE
+# pins the build, and exact Alpine versions vanish from the mirror on the next
+# security update, breaking every rebuild.
+# kics-scan ignore-block
 RUN apk add --no-cache \
       ca-certificates curl build-base linux-headers \
       automake autoconf libtool pkgconf \
@@ -135,3 +139,5 @@ LABEL org.opencontainers.image.title="nginx-modsecurity-module" \
       org.opencontainers.image.licenses="Apache-2.0" \
       org.opencontainers.image.source="https://github.com/fabiocicerchia/nginx-modsecurity"
 COPY --from=build /out/ /
+# Nothing here runs, so there is nothing to check.
+HEALTHCHECK NONE

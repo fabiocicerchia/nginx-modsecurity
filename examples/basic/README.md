@@ -7,7 +7,7 @@ a build that fails if the nginx versions ever drift apart.
 
 ```sh
 docker build -t modsec-demo .
-docker run --rm -p 8080:80 modsec-demo
+docker run --rm -p 8080:8080 modsec-demo
 ```
 
 If nginx starts and prints nothing alarming, the module loaded. That is the
