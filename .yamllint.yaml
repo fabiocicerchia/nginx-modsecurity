@@ -1,0 +1,10 @@
+---
+# Actions and images are pinned by SHA with the tag in a trailing comment, so
+# a single `uses:` line runs past 80 columns; 130 fits the longest digest pin.
+extends: relaxed
+
+rules:
+  line-length:
+    max: 130
+    level: warning
+    allow-non-breakable-inline-mappings: true
