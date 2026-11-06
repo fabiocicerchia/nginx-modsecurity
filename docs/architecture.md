@@ -113,7 +113,10 @@ not the source tree the module build needs.
 
 ## Bumping versions
 
-1. `make build NGINX_VERSION=1.29.1` — `BASE` follows automatically.
+1. Add the version to `versions.json` with its tarball `sha256` and base
+   `digest`s.
+1. `make build NGINX_VERSION=1.31.4` — `BASE` and `NGINX_SHA256` follow
+   automatically from `versions.json`.
 1. `make test` loads the module into a stock nginx of that version. That is the
    assertion most worth having here: a module that compiles and does not load
    is the normal failure, not the exotic one. `make test-crs` follows it with

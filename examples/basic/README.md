@@ -16,7 +16,7 @@ step that fails in practice; compiling is the easy part.
 ## Watch it block
 
 ```sh
-curl -i 'http://localhost:8080/?testparam=hello'    # 200 ok
+curl -i 'http://localhost:8080/?testparam=hello'    # 200, nginx welcome page
 curl -i 'http://localhost:8080/?testparam=blocked'  # 403
 ```
 
@@ -80,8 +80,11 @@ a customer in week one is a WAF that is switched off in week two.
 
 ```sh
 # in the repo root
-make build NGINX_VERSION=1.29.1
+make build NGINX_VERSION=1.31.4
 ```
+
+Any version in `versions.json` works; its checksum and base digest come from
+there.
 
 Then change both the `FROM ... AS modsec` tag and the `FROM nginx:` tag in this
 Dockerfile. The assertion catches you if you change only one.

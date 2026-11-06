@@ -35,7 +35,11 @@ BASE_DIGEST         ?= $(shell jq -r --arg v '$(NGINX_VERSION)' --arg f '$(FLAVO
                          versions.json 2>/dev/null)
 BASE_TAG            ?= nginx:$(NGINX_VERSION)$(if $(filter alpine,$(FLAVOUR)),-alpine,)
 BASE                ?= $(BASE_TAG)$(if $(BASE_DIGEST),@$(BASE_DIGEST),)
-NGINX_SHA256        ?=
+# Same source for the tarball checksum: without it the Dockerfile falls back to
+# its default version's hash, and any other NGINX_VERSION fails `sha256sum -c`.
+NGINX_SHA256        ?= $(shell jq -r --arg v '$(NGINX_VERSION)' \
+                         '.supported[] | select(.nginx == $$v) | .sha256 // empty' \
+                         versions.json 2>/dev/null)
 
 BUILD_ARGS = --build-arg NGINX_VERSION=$(NGINX_VERSION) \
              --build-arg MODSECURITY_VERSION=$(MODSECURITY_VERSION) \
