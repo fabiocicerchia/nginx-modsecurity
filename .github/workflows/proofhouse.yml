@@ -54,6 +54,9 @@ jobs:
       - name: Run gandalf
         # A red verdict is the run most worth recording, so it must not stop the
         # POST below. gandalf-pr-review.yml is where findings gate a change.
+        # A crash still fails the job: no report means the POST below fails.
+        # Drop this once gandalf can exit 0 on a red verdict and non-zero only
+        # when the scan itself breaks.
         continue-on-error: true
         run: |
           docker run --rm \
@@ -64,8 +67,6 @@ jobs:
               && PYTHONPATH=/gandalf/src python -m gandalf --no-llm --no-html --out-dir reports'
 
       - name: Post to proofhouse
-        # Telemetry. A dashboard being down is not this repository's problem.
-        continue-on-error: true
         env:
           TOKEN: ${{ secrets.PROOFHOUSE_TOKEN }}
         run: |
