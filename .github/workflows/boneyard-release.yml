@@ -39,12 +39,18 @@ jobs:
           skip-unchanged: "false"
 
       - name: Post to boneyard
+        # Telemetry: a dashboard being down is not this pull request's problem.
+        # Fork and Dependabot pull requests get no BONEYARD_TOKEN, so they skip.
         continue-on-error: true
         env:
           TOKEN: ${{ secrets.BONEYARD_TOKEN }}
           LABEL: PR #${{ github.event.pull_request.number }}
         run: |
           set -euo pipefail
+          if [ -z "${TOKEN}" ]; then
+            echo "::notice::BONEYARD_TOKEN is not available to this pull request; nothing was posted"
+            exit 0
+          fi
           test -s sbom-diff-result.json
           curl --fail-with-body --silent --show-error \
             --retry 3 --retry-connrefused --max-time 60 \

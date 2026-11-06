@@ -105,11 +105,10 @@ jobs:
         run: |
           set -euo pipefail
           tag="$(make -s print-base NGINX_VERSION="$NGINX_VERSION" FLAVOUR="$FLAVOUR")"
-          # The build above pulled it, so it is in the local store with a
-          # RepoDigest; `|| true` because a missing digest is worth reporting,
-          # not worth failing a rebuild over.
-          digest=$(docker image inspect "$tag" \
-            --format '{{ index .RepoDigests 0 }}' 2>/dev/null | cut -d@ -f2) || true
+          # Asked of the registry, not the local store: BuildKit keeps the
+          # images it pulls for FROM out of `docker image inspect`'s reach.
+          # Index digest, as versions.json pins; a failed lookup is reported, not fatal.
+          digest=$(docker buildx imagetools inspect "$tag" --format '{{json .Manifest}}' | jq -r .digest) || true
           echo "\`$tag\` built against \`${digest:-unknown}\`" >> "$GITHUB_STEP_SUMMARY"
           pinned=$(jq -r --arg v "$NGINX_VERSION" --arg f "$FLAVOUR" \
             '.supported[] | select(.nginx == $v) | .digest[$f] // empty' versions.json)
