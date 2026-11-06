@@ -39,6 +39,10 @@ jobs:
           skip-unchanged: "false"
 
       - name: Post to boneyard
+        # Telemetry, like the POST in proofhouse.yml: a dashboard being down is
+        # not this pull request's problem, and fork and Dependabot pull requests
+        # get no BONEYARD_TOKEN. Drop this once boneyard is a required record
+        # and the step skips itself when the secret is absent.
         continue-on-error: true
         env:
           TOKEN: ${{ secrets.BONEYARD_TOKEN }}
