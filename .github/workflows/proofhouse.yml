@@ -64,16 +64,12 @@ jobs:
               && PYTHONPATH=/gandalf/src python -m gandalf --no-llm --no-html --out-dir reports'
 
       - name: Post to proofhouse
+        # Telemetry. A dashboard being down is not this repository's problem.
+        continue-on-error: true
         env:
           TOKEN: ${{ secrets.PROOFHOUSE_TOKEN }}
         run: |
           set -euo pipefail
-          # A frozen Proofhouse answers from a static copy that stores nothing: say
-          # so and skip, rather than fail on its 405. Anything else still fails below.
-          if curl -sI --max-time 20 https://app.proofhouse.cloud/ | grep -qi '^x-kodebeat-snapshot:'; then
-            echo "::notice::https://app.proofhouse.cloud is serving its frozen copy; nothing was posted"
-            exit 0
-          fi
           # Newest report without parsing `ls` output, which shellcheck refuses.
           report="$(find reports -name 'gandalf-*.json' -printf '%T@ %p\n' \
                     | sort -rn | head -1 | cut -d' ' -f2-)"
