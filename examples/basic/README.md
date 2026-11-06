@@ -80,8 +80,11 @@ a customer in week one is a WAF that is switched off in week two.
 
 ```sh
 # in the repo root
-make build NGINX_VERSION=1.29.1
+make build NGINX_VERSION=1.31.4
 ```
+
+Any version in `versions.json` works; its checksum and base digest come from
+there.
 
 Then change both the `FROM ... AS modsec` tag and the `FROM nginx:` tag in this
 Dockerfile. The assertion catches you if you change only one.
