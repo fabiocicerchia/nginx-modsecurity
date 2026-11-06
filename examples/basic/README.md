@@ -16,7 +16,7 @@ step that fails in practice; compiling is the easy part.
 ## Watch it block
 
 ```sh
-curl -i 'http://localhost:8080/?testparam=hello'    # 200 ok
+curl -i 'http://localhost:8080/?testparam=hello'    # 200, nginx welcome page
 curl -i 'http://localhost:8080/?testparam=blocked'  # 403
 ```
 
