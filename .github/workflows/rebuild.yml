@@ -107,8 +107,8 @@ jobs:
           tag="$(make -s print-base NGINX_VERSION="$NGINX_VERSION" FLAVOUR="$FLAVOUR")"
           # Asked of the registry, not the local store: BuildKit keeps the
           # images it pulls for FROM out of `docker image inspect`'s reach.
-          # This is the index digest, the same kind versions.json pins.
-          digest=$(docker buildx imagetools inspect "$tag" --format '{{ .Manifest.Digest }}')
+          # Index digest, as versions.json pins; a failed lookup is reported, not fatal.
+          digest=$(docker buildx imagetools inspect "$tag" --format '{{json .Manifest}}' | jq -r .digest) || true
           echo "\`$tag\` built against \`${digest:-unknown}\`" >> "$GITHUB_STEP_SUMMARY"
           pinned=$(jq -r --arg v "$NGINX_VERSION" --arg f "$FLAVOUR" \
             '.supported[] | select(.nginx == $v) | .digest[$f] // empty' versions.json)
