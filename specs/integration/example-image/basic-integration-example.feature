@@ -15,14 +15,14 @@ Feature: Running the reference nginx integration
 
   @id:integration.example-image.002 @rule:integration.example.module-loads-at-start @inferred @source:examples/basic/Dockerfile#COPY --from=modsec
   Scenario: The example starts with the module and its library loadable
-    Given the example image built
+    Given the example image is built
     When the operator starts the example container
     Then nginx starts without a dlopen or "not binary compatible" error
     And nginx accepts requests on port 8080 with ModSecurity enforcing
 
   @id:integration.example-image.003 @rule:integration.example.runs-unprivileged @inferred @source:examples/basic/Dockerfile#USER nginx
   Scenario: The example nginx runs as an unprivileged user on a high port
-    Given the example image built
+    Given the example image is built
     When the operator starts the example container
     Then the nginx processes run as the nginx user, not root
     And the server listens on port 8080

@@ -10,28 +10,28 @@ Feature: Reporting clean build time and artifact size
     Given earlier builds of the same version have left cached layers on the machine
     When the operator runs the build report
     Then the artifact image is rebuilt from scratch without using any cached layer
-    And the image is tagged <image>:<version>
-    And the console shows "build time   <seconds>s (clean, --no-cache)"
+    And the image is tagged with the selected image name and version
+    And the console shows the build time in seconds, marked "(clean, --no-cache)"
 
   @id:build-reporting.build-time.002 @rule:build-reporting.artifact-size.size-layers-and-architecture @inferred @source:report.sh#report.sh
   Scenario Outline: The report states the artifact image's size, layer count and architecture
     Given the clean build of the artifact image has finished
     When the operator runs the build report
     Then the console shows the image reference and its architecture
-    And the console shows "size <bytes> bytes (<mib> MiB) in <layers> layer(s)"
+    And the console shows "size <bytes> bytes (<mib> MiB)" followed by the layer count
     And the MiB figure has one decimal place, truncated rather than rounded
 
     Examples:
       | bytes    | mib  |
       | 10485760 | 10.0 |
-      | 1572863  | 1.4  |
+      | 2086666  | 1.9  |
       | 5242880  | 5.0  |
 
   @id:build-reporting.build-time.003 @rule:build-reporting.ci-summary.attached-to-producing-run @inferred @source:report.sh#report.sh
   Scenario: In CI the measurements are attached to the run that produced them
     Given the report runs inside a CI job that provides a run summary
     When the operator runs the build report
-    Then the run summary gains a heading "Build report — nginx <nginx> (<flavour>)"
+    Then the run summary gains a "Build report" heading naming the nginx version and flavour
     And the summary table lists image, base, ModSecurity version, architecture, size, clean build time and runner
     And the runner shows as "unknown / unknown" when the CI does not name it
     And the summary notes that build time is an order of magnitude on a shared runner and the size is the module and library on scratch, not a runnable nginx

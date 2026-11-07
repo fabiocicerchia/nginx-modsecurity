@@ -17,9 +17,10 @@ Feature: Documentation visual theme
   Scenario: The docs and the splash page share one orange-red accent palette
     Given the theme's accent pair is orange #fb923c and red #ef4444
     When a reader views the documentation home and the splash page
-    Then the header chrome and links in the light scheme are red #ef4444
+    Then links in the light scheme are red #ef4444
     And primary buttons and the hero title show an orange-to-red gradient
-    And the splash page title and install label use the same orange and red
+    And the splash page title shows the same orange-to-red gradient
+    And the splash page install label is the same red
 
   @id:documentation-site.theme.003 @rule:docs.theme.scheme-legible-links @inferred @source:docs/stylesheets/extra.css#[data-md-color-scheme="slate"]
   Scenario Outline: Links switch accent colour so they stay readable in light and dark schemes
