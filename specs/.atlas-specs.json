@@ -1,0 +1,768 @@
+{
+ "excluded": {
+  "docs/stylesheets": [
+   {
+    "candidate": "Translucent blurred header with hairline divider and shadow on scroll",
+    "covered_by": "",
+    "reason": "TRIVIAL",
+    "source": "docs/stylesheets/extra.css#.md-header"
+   },
+   {
+    "candidate": "Heading weights, letter-spacing and font feature settings",
+    "covered_by": "",
+    "reason": "TRIVIAL",
+    "source": "docs/stylesheets/extra.css#.md-typeset h1"
+   },
+   {
+    "candidate": "Rounded, bordered code blocks",
+    "covered_by": "",
+    "reason": "TRIVIAL",
+    "source": "docs/stylesheets/extra.css#.md-typeset .highlight"
+   },
+   {
+    "candidate": "Hero block centring and tagline sizing",
+    "covered_by": "",
+    "reason": "TRIVIAL",
+    "source": "docs/stylesheets/extra.css#.md-typeset .hero"
+   },
+   {
+    "candidate": "Feature card depth, hover lift and accent-tinted border and icons",
+    "covered_by": "",
+    "reason": "TRIVIAL",
+    "source": "docs/stylesheets/extra.css#.md-typeset .grid.cards > ul > li"
+   },
+   {
+    "candidate": "Bold sidebar title and active link",
+    "covered_by": "",
+    "reason": "TRIVIAL",
+    "source": "docs/stylesheets/extra.css#.md-nav__title"
+   },
+   {
+    "candidate": "Footer background, border and muted link colour",
+    "covered_by": "",
+    "reason": "TRIVIAL",
+    "source": "docs/stylesheets/extra.css#.md-footer-meta"
+   },
+   {
+    "candidate": "Smooth scrolling for in-page anchors",
+    "covered_by": "",
+    "reason": "TRIVIAL",
+    "source": "docs/stylesheets/extra.css#html"
+   },
+   {
+    "candidate": "Tab link opacity and active state",
+    "covered_by": "",
+    "reason": "TRIVIAL",
+    "source": "docs/stylesheets/extra.css#.md-tabs__link"
+   }
+  ],
+  "examples/basic": [
+   {
+    "candidate": "Runtime shared libraries (libcurl4, libgeoip1, liblmdb0, libxml2, libyajl2) are installed unpinned",
+    "covered_by": "",
+    "reason": "TECH_BUILD",
+    "source": "examples/basic/Dockerfile#RUN apt-get"
+   },
+   {
+    "candidate": "nginx base image pinned by sha256 digest",
+    "covered_by": "",
+    "reason": "TECH_BUILD",
+    "source": "examples/basic/Dockerfile#FROM nginx"
+   },
+   {
+    "candidate": "ldconfig registers /usr/local/modsecurity/lib so the loader finds libmodsecurity.so.3",
+    "covered_by": "integration.example.module-loads-at-start",
+    "reason": "DUPLICATE_OF",
+    "source": "examples/basic/Dockerfile#RUN ldconfig"
+   },
+   {
+    "candidate": "bash pipefail shell for the version check",
+    "covered_by": "integration.drift-guard.build-fails-on-version-mismatch",
+    "reason": "DUPLICATE_OF",
+    "source": "examples/basic/Dockerfile#SHELL"
+   },
+   {
+    "candidate": "load_module placed above events, not inside http",
+    "covered_by": "integration.example.module-loads-at-start",
+    "reason": "DUPLICATE_OF",
+    "source": "examples/basic/nginx.conf#load_module"
+   },
+   {
+    "candidate": "Temporary NGINX_VERSION file removed after the check",
+    "covered_by": "",
+    "reason": "TRIVIAL",
+    "source": "examples/basic/Dockerfile#RUN test NGINX_VERSION"
+   },
+   {
+    "candidate": "README snippet for adding the OWASP CRS and the DetectionOnly advice",
+    "covered_by": "",
+    "reason": "UNVERIFIABLE",
+    "source": "examples/basic/README.md#Add real rules"
+   },
+   {
+    "candidate": "Rebuilding for a different nginx version via make build NGINX_VERSION",
+    "covered_by": "",
+    "reason": "UNVERIFIABLE",
+    "source": "examples/basic/README.md#Different nginx, different artifact"
+   },
+   {
+    "candidate": "A request carrying the demo trigger value is refused, others are served",
+    "covered_by": "",
+    "reason": "UNVERIFIABLE",
+    "source": "examples/basic/Dockerfile#RUN printf SecRule ARGS:testparam"
+   },
+   {
+    "candidate": "The example image will not build when the module and nginx versions differ",
+    "covered_by": "",
+    "reason": "UNVERIFIABLE",
+    "source": "examples/basic/Dockerfile#RUN test NGINX_VERSION"
+   }
+  ],
+  "nginx-modsecurity/dockerfile": [
+   {
+    "candidate": "Build toolchain packages installed unpinned via apt",
+    "covered_by": "",
+    "reason": "TECH_BUILD",
+    "source": "Dockerfile#build"
+   },
+   {
+    "candidate": "bash pipefail shell for build steps",
+    "covered_by": "",
+    "reason": "TECH_BUILD",
+    "source": "Dockerfile#build"
+   },
+   {
+    "candidate": "libmodsecurity built with build.sh/configure --with-pcre2 and installed to /usr/local/modsecurity",
+    "covered_by": "",
+    "reason": "INTERNAL_MECHANISM",
+    "source": "Dockerfile#build"
+   },
+   {
+    "candidate": "Artifact staged so the final COPY is a single layer",
+    "covered_by": "",
+    "reason": "TECH_BUILD",
+    "source": "Dockerfile#build"
+   },
+   {
+    "candidate": "HEALTHCHECK NONE on the scratch image",
+    "covered_by": "artifact.contents.module-ships-with-runtime-files",
+    "reason": "DUPLICATE_OF",
+    "source": "Dockerfile"
+   },
+   {
+    "candidate": "glibc base: the Debian-built module does not load into nginx:alpine",
+    "covered_by": "enforced by Dockerfile.alpine and the Makefile FLAVOUR, not by this file",
+    "reason": "UNVERIFIABLE",
+    "source": "Dockerfile#BASE"
+   },
+   {
+    "candidate": "kics/hadolint suppressions",
+    "covered_by": "",
+    "reason": "TECH_DEVTOOLING",
+    "source": "Dockerfile#build"
+   }
+  ],
+  "nginx-modsecurity/makefile": [
+   {
+    "candidate": "make build compiles the module into a scratch image tagged with the version tag",
+    "covered_by": "",
+    "reason": "TECH_BUILD",
+    "source": "Makefile#build"
+   },
+   {
+    "candidate": "make install pulls the published tag for the selected version and flavour",
+    "covered_by": "artifacts.tags.encode-versions-and-flavour",
+    "reason": "TRIVIAL",
+    "source": "Makefile#install"
+   },
+   {
+    "candidate": "make push builds then pushes the version tag",
+    "covered_by": "artifacts.tags.encode-versions-and-flavour",
+    "reason": "DUPLICATE_OF",
+    "source": "Makefile#push"
+   },
+   {
+    "candidate": "make test / test-crs prove the module loads and the CRS blocks in a stock nginx of the same version and libc",
+    "covered_by": "",
+    "reason": "TECH_DEVTOOLING",
+    "source": "Makefile#test"
+   },
+   {
+    "candidate": "make report measures build time and image size, writing to the CI step summary",
+    "covered_by": "",
+    "reason": "TECH_DEVTOOLING",
+    "source": "Makefile#report"
+   },
+   {
+    "candidate": "make lint runs every pre-commit hook; make format ignores fixer exit codes; make setup installs the hook",
+    "covered_by": "",
+    "reason": "TECH_DEVTOOLING",
+    "source": "Makefile#lint"
+   },
+   {
+    "candidate": "make clean removes ./dist",
+    "covered_by": "",
+    "reason": "TRIVIAL",
+    "source": "Makefile#clean"
+   },
+   {
+    "candidate": "print-image prints the image name for CI",
+    "covered_by": "",
+    "reason": "INTERNAL_MECHANISM",
+    "source": "Makefile#print-image"
+   },
+   {
+    "candidate": "Default nginx 1.27.5 / ModSecurity 3.0.16 / GHCR image defaults",
+    "covered_by": "",
+    "reason": "TRIVIAL",
+    "source": "Makefile#IMAGE"
+   }
+  ],
+  "nginx-modsecurity/report": [
+   {
+    "candidate": "Optional nginx tarball checksum is forwarded to the build only when supplied",
+    "covered_by": "",
+    "reason": "TECH_BUILD",
+    "source": "report.sh#report.sh"
+   },
+   {
+    "candidate": "MiB computed without bc or awk to avoid locale dependence",
+    "covered_by": "",
+    "reason": "INTERNAL_MECHANISM",
+    "source": "report.sh#report.sh"
+   },
+   {
+    "candidate": "CI report job selects the default supported version from versions.json",
+    "covered_by": "",
+    "reason": "TECH_BUILD",
+    "source": ".github/workflows/ci.yml#report"
+   },
+   {
+    "candidate": "shellcheck SC2016 suppression for markdown backticks",
+    "covered_by": "",
+    "reason": "TECH_DEVTOOLING",
+    "source": "report.sh#report.sh"
+   }
+  ]
+ },
+ "lifted": {
+  "docs/stylesheets": [],
+  "examples/basic": [
+   {
+    "from_source": "examples/basic/Dockerfile#RUN test NGINX_VERSION",
+    "rule": "integration.drift-guard.build-fails-on-version-mismatch"
+   },
+   {
+    "from_source": "examples/basic/Dockerfile#USER nginx",
+    "rule": "integration.example.runs-unprivileged"
+   }
+  ],
+  "nginx-modsecurity/dockerfile": [
+   {
+    "from_source": "Dockerfile#build",
+    "rule": "supply-chain.sources.checksum-before-unpack: a substituted source download fails the build before it is compiled into the WAF"
+   },
+   {
+    "from_source": "Dockerfile#BASE",
+    "rule": "supply-chain.base.pinned-by-digest: a rebuild cannot silently move onto different upstream base bytes"
+   }
+  ],
+  "nginx-modsecurity/makefile": [
+   {
+    "from_source": "Makefile#BASE_DIGEST",
+    "rule": "build.base.pinned-by-digest-per-version-and-flavour"
+   },
+   {
+    "from_source": "Makefile#NGINX_SHA256",
+    "rule": "build.sources.nginx-checksum-matches-selected-version"
+   }
+  ],
+  "nginx-modsecurity/report": []
+ },
+ "retired": [],
+ "scenarios": {
+  "artifact-delivery.artifact-contents.001": {
+   "file": "specs/artifact-delivery/artifact-contents/module-artifact-contents.feature",
+   "fingerprint": "403b5366dec8",
+   "human": false,
+   "rule": "artifact.contents.module-ships-with-runtime-files",
+   "source": "Dockerfile#build",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "artifact-delivery.artifact-contents.002": {
+   "file": "specs/artifact-delivery/artifact-contents/module-artifact-contents.feature",
+   "fingerprint": "403b5366dec8",
+   "human": false,
+   "rule": "artifact.contents.version-stamps",
+   "source": "Dockerfile#build",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "artifact-delivery.artifact-contents.003": {
+   "file": "specs/artifact-delivery/artifact-contents/module-artifact-contents.feature",
+   "fingerprint": "403b5366dec8",
+   "human": false,
+   "rule": "artifact.contents.real-unicode-mapping",
+   "source": "Dockerfile#build",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "artifact-delivery.artifact-contents.004": {
+   "file": "specs/artifact-delivery/artifact-contents/module-artifact-contents.feature",
+   "fingerprint": "403b5366dec8",
+   "human": false,
+   "rule": "artifact.licensing.attribution-travels-with-artifact",
+   "source": "Dockerfile#build",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "artifact-delivery.extraction.001": {
+   "file": "specs/artifact-delivery/extraction/extract-module-to-disk.feature",
+   "fingerprint": "d9fb628375d2",
+   "human": false,
+   "rule": "artifacts.extract.writes-files-to-dist",
+   "source": "Makefile#extract",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "artifact-delivery.publishing.001": {
+   "file": "specs/artifact-delivery/publishing/artifact-tags-and-release.feature",
+   "fingerprint": "6cea1059cbad",
+   "human": false,
+   "rule": "artifacts.tags.encode-versions-and-flavour",
+   "source": "Makefile#VERSION",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "artifact-delivery.publishing.002": {
+   "file": "specs/artifact-delivery/publishing/artifact-tags-and-release.feature",
+   "fingerprint": "5839cf576f08",
+   "human": false,
+   "rule": "artifacts.tags.latest-follows-default-version-only",
+   "source": "Makefile#release",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "artifact-delivery.publishing.003": {
+   "file": "specs/artifact-delivery/publishing/artifact-tags-and-release.feature",
+   "fingerprint": "5839cf576f08",
+   "human": false,
+   "rule": "artifacts.release.amd64-and-arm64",
+   "source": "Makefile#release",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "build-reporting.build-time.001": {
+   "file": "specs/build-reporting/build-time/build-report.feature",
+   "fingerprint": "5fcb14782f0b",
+   "human": false,
+   "rule": "build-reporting.build-time.measured-from-uncached-build",
+   "source": "report.sh#report.sh",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "build-reporting.build-time.002": {
+   "file": "specs/build-reporting/build-time/build-report.feature",
+   "fingerprint": "5fcb14782f0b",
+   "human": false,
+   "rule": "build-reporting.artifact-size.size-layers-and-architecture",
+   "source": "report.sh#report.sh",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "build-reporting.build-time.003": {
+   "file": "specs/build-reporting/build-time/build-report.feature",
+   "fingerprint": "5fcb14782f0b",
+   "human": false,
+   "rule": "build-reporting.ci-summary.attached-to-producing-run",
+   "source": "report.sh#report.sh",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "build-reporting.build-time.004": {
+   "file": "specs/build-reporting/build-time/build-report.feature",
+   "fingerprint": "5fcb14782f0b",
+   "human": false,
+   "rule": "build-reporting.ci-summary.local-run-console-only",
+   "source": "report.sh#report.sh",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "build-reporting.build-time.005": {
+   "file": "specs/build-reporting/build-time/build-report.feature",
+   "fingerprint": "5fcb14782f0b",
+   "human": false,
+   "rule": "build-reporting.build-time.refuses-missing-inputs",
+   "source": "report.sh#report.sh",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "developer-tooling.command-surface.001": {
+   "file": "specs/developer-tooling/command-surface/make-command-surface.feature",
+   "fingerprint": "517de792f113",
+   "human": false,
+   "rule": "tooling.commands.bare-make-shows-help",
+   "source": "Makefile#help",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "developer-tooling.command-surface.002": {
+   "file": "specs/developer-tooling/command-surface/make-command-surface.feature",
+   "fingerprint": "a7ffcd0268a4",
+   "human": false,
+   "rule": "tooling.commands.run-is-declared-not-applicable",
+   "source": "Makefile#run",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "developer-tooling.command-surface.003": {
+   "file": "specs/developer-tooling/command-surface/make-command-surface.feature",
+   "fingerprint": "eee6cffaed8d",
+   "human": false,
+   "rule": "tooling.commands.analyze-requires-trivy",
+   "source": "Makefile#analyze",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "documentation-site.theme.001": {
+   "file": "specs/documentation-site/theme/docs-visual-theme.feature",
+   "fingerprint": "ac660254fd34",
+   "human": false,
+   "rule": "docs.theme.no-network-assets",
+   "source": "docs/stylesheets/extra.css#:root",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "documentation-site.theme.002": {
+   "file": "specs/documentation-site/theme/docs-visual-theme.feature",
+   "fingerprint": "ac660254fd34",
+   "human": false,
+   "rule": "docs.theme.shared-accent-palette",
+   "source": "docs/stylesheets/extra.css#:root",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "documentation-site.theme.003": {
+   "file": "specs/documentation-site/theme/docs-visual-theme.feature",
+   "fingerprint": "433084a194b6",
+   "human": false,
+   "rule": "docs.theme.scheme-legible-links",
+   "source": "docs/stylesheets/extra.css#[data-md-color-scheme=\"slate\"]",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "documentation-site.theme.004": {
+   "file": "specs/documentation-site/theme/docs-visual-theme.feature",
+   "fingerprint": "4413aef244b0",
+   "human": false,
+   "rule": "docs.theme.button-hover-glow",
+   "source": "docs/stylesheets/extra.css#.md-typeset .md-button:hover",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "documentation-site.theme.005": {
+   "file": "specs/documentation-site/theme/docs-visual-theme.feature",
+   "fingerprint": "c702704e5aae",
+   "human": false,
+   "rule": "docs.theme.no-borrowed-logo",
+   "source": "docs/stylesheets/extra.css#.md-header__button.md-logo",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "documentation-site.theme.006": {
+   "file": "specs/documentation-site/theme/docs-visual-theme.feature",
+   "fingerprint": "721086d36c47",
+   "human": false,
+   "rule": "docs.theme.tables-as-cards",
+   "source": "docs/stylesheets/extra.css#.md-typeset table:not([class])",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "integration.example-image.001": {
+   "file": "specs/integration/example-image/basic-integration-example.feature",
+   "fingerprint": "7836bfe14330",
+   "human": false,
+   "rule": "integration.example.unprotected-path-bypasses-waf",
+   "source": "examples/basic/nginx.conf#location /unprotected/",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "integration.example-image.002": {
+   "file": "specs/integration/example-image/basic-integration-example.feature",
+   "fingerprint": "e6687b607286",
+   "human": false,
+   "rule": "integration.example.module-loads-at-start",
+   "source": "examples/basic/Dockerfile#COPY --from=modsec",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "integration.example-image.003": {
+   "file": "specs/integration/example-image/basic-integration-example.feature",
+   "fingerprint": "3f1ad6d44bd5",
+   "human": false,
+   "rule": "integration.example.runs-unprivileged",
+   "source": "examples/basic/Dockerfile#USER nginx",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "integration.example-image.004": {
+   "file": "specs/integration/example-image/basic-integration-example.feature",
+   "fingerprint": "6b77bb155dcf",
+   "human": false,
+   "rule": "integration.demo-rule.health-check-reflects-serving",
+   "source": "examples/basic/Dockerfile#HEALTHCHECK",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "module-build.runtime-flavours.001": {
+   "file": "specs/module-build/runtime-flavours/runtime-flavour-selection.feature",
+   "fingerprint": "700bdf7d52c6",
+   "human": false,
+   "rule": "build.flavour.selects-matching-nginx-base",
+   "source": "Makefile#BASE_TAG",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "supply-chain.base-pinning.001": {
+   "file": "specs/supply-chain/base-pinning/base-image-pinning.feature",
+   "fingerprint": "12adcf5fe878",
+   "human": false,
+   "rule": "build.base.pinned-by-digest-per-version-and-flavour",
+   "source": "Makefile#BASE_DIGEST",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "supply-chain.source-verification.001": {
+   "file": "specs/supply-chain/source-verification/verified-pinned-sources.feature",
+   "fingerprint": "403b5366dec8",
+   "human": false,
+   "rule": "supply-chain.sources.checksum-before-unpack",
+   "source": "Dockerfile#build",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "supply-chain.source-verification.002": {
+   "file": "specs/supply-chain/source-verification/verified-pinned-sources.feature",
+   "fingerprint": "8146a22fa2bc",
+   "human": false,
+   "rule": "supply-chain.base.pinned-by-digest",
+   "source": "Dockerfile#BASE",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "supply-chain.source-verification.003": {
+   "file": "specs/supply-chain/source-verification/verified-pinned-sources.feature",
+   "fingerprint": "403b5366dec8",
+   "human": false,
+   "rule": "module-build.version.compiled-against-named-nginx",
+   "source": "Dockerfile#build",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  },
+  "supply-chain.source-verification.004": {
+   "file": "specs/supply-chain/source-verification/source-checksum-per-version.feature",
+   "fingerprint": "9b2faacf4522",
+   "human": false,
+   "rule": "build.sources.nginx-checksum-matches-selected-version",
+   "source": "Makefile#NGINX_SHA256",
+   "status": "inferred",
+   "test": "",
+   "tests": []
+  }
+ },
+ "taxonomy": {
+  "domains": [
+   {
+    "areas": [
+     {
+      "description": "Building the module against the exact nginx version it will be loaded into, with versions and base digests pinned per release.",
+      "slug": "version-matching",
+      "title": "Version matching"
+     },
+     {
+      "description": "Choosing a glibc (Debian) or musl (Alpine) build so the module loads into the matching nginx runtime.",
+      "slug": "runtime-flavours",
+      "title": "Runtime flavours"
+     },
+     {
+      "description": "Compiling libmodsecurity and the nginx connector from source into a loadable dynamic module.",
+      "slug": "engine-compilation",
+      "title": "Engine and connector compilation"
+     },
+     {
+      "description": "Producing the module for amd64 and arm64 platforms in one release.",
+      "slug": "multi-arch",
+      "title": "Multi-architecture builds"
+     }
+    ],
+    "description": "Compiling the ModSecurity v3 engine and its nginx connector into a dynamic module that matches one exact nginx version and libc.",
+    "slug": "module-build",
+    "title": "Module Build"
+   },
+   {
+    "areas": [
+     {
+      "description": "Checksumming every downloaded source tarball before it is unpacked so a substituted artifact fails the build.",
+      "slug": "source-verification",
+      "title": "Source verification"
+     },
+     {
+      "description": "Pinning the build base by digest so a rebuild cannot silently move onto different upstream bytes.",
+      "slug": "base-pinning",
+      "title": "Base image pinning"
+     },
+     {
+      "description": "Shipping the upstream license notice and OCI metadata inside the artifact.",
+      "slug": "licensing-attribution",
+      "title": "Licensing and attribution"
+     }
+    ],
+    "description": "Guaranteeing that the bytes compiled into the WAF are the ones that were asked for.",
+    "slug": "supply-chain",
+    "title": "Supply-chain Integrity"
+   },
+   {
+    "areas": [
+     {
+      "description": "Packaging the module, its shared library, the runtime configuration and unicode mapping, and version stamps in a scratch image.",
+      "slug": "artifact-contents",
+      "title": "Artifact contents"
+     },
+     {
+      "description": "Writing the module and its library to a local directory for consumers who want files instead of a registry.",
+      "slug": "extraction",
+      "title": "Extraction to disk"
+     },
+     {
+      "description": "Pushing tagged artifact images to the registry and pulling published ones, with a tag scheme that encodes versions and flavour.",
+      "slug": "publishing",
+      "title": "Publishing and pulling"
+     }
+    ],
+    "description": "Handing consumers the module as a non-runnable artifact they copy into their own nginx, rather than an image to adopt.",
+    "slug": "artifact-delivery",
+    "title": "Artifact Delivery"
+   },
+   {
+    "areas": [
+     {
+      "description": "A reference nginx image that copies in the module, library and config, installs runtime dependencies and runs unprivileged.",
+      "slug": "example-image",
+      "title": "Example integration"
+     },
+     {
+      "description": "Failing the consumer's build, not container start-up, when the module and nginx versions disagree.",
+      "slug": "drift-guard",
+      "title": "Version drift guard"
+     },
+     {
+      "description": "A single example rule and health check so the integration blocks something observable out of the box.",
+      "slug": "demo-rule",
+      "title": "Demo blocking rule"
+     }
+    ],
+    "description": "How a consumer loads the module into a stock nginx and gets a working, observable WAF.",
+    "slug": "integration",
+    "title": "Integration into nginx"
+   },
+   {
+    "areas": [
+     {
+      "description": "Timing an uncached build of the artifact for the current version and flavour.",
+      "slug": "build-time",
+      "title": "Clean build time"
+     },
+     {
+      "description": "Reporting the artifact image's size, layer count and architecture.",
+      "slug": "artifact-size",
+      "title": "Artifact size"
+     },
+     {
+      "description": "Attaching the measurements to the CI run that produced them instead of committing a stale report.",
+      "slug": "ci-summary",
+      "title": "CI run summary"
+     }
+    ],
+    "description": "Measuring what adopting the artifact costs, rather than claiming it.",
+    "slug": "build-reporting",
+    "title": "Build Reporting"
+   },
+   {
+    "areas": [
+     {
+      "description": "A self-documenting set of make verbs, including declared no-ops and machine-readable outputs for CI.",
+      "slug": "command-surface",
+      "title": "Command surface"
+     },
+     {
+      "description": "Linting, formatting, and vulnerability, misconfiguration and secret scanning through the same hooks CI runs.",
+      "slug": "quality-gates",
+      "title": "Quality gates"
+     },
+     {
+      "description": "Proving the module loads into a stock nginx and that a real rule set loads and blocks.",
+      "slug": "verification",
+      "title": "Load and rule-set verification"
+     },
+     {
+      "description": "Removing extracted artifacts from the working tree.",
+      "slug": "cleanup",
+      "title": "Workspace cleanup"
+     }
+    ],
+    "description": "The uniform command surface and quality gates contributors use to work on the repo.",
+    "slug": "developer-tooling",
+    "title": "Developer Tooling"
+   },
+   {
+    "areas": [
+     {
+      "description": "A self-hosted documentation theme with a shared accent palette, typography and feature cards, loading nothing from the network.",
+      "slug": "theme",
+      "title": "Visual theme"
+     },
+     {
+      "description": "The splash page styled from the same palette so it cannot drift from the rendered docs.",
+      "slug": "landing-page",
+      "title": "Landing page"
+     }
+    ],
+    "description": "The project's documentation and landing page presentation.",
+    "slug": "documentation-site",
+    "title": "Documentation Site"
+   }
+  ]
+ }
+}
