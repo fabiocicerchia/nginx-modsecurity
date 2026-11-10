@@ -39,11 +39,3 @@ Feature: Packaging the ModSecurity module artifact
       | 22    | the build fails with "unicode.mapping looks like a stub, not the upstream table" |
       | 10000 | the build fails with "unicode.mapping looks like a stub, not the upstream table" |
       | 74000 | the artifact ships that table as /conf/unicode.mapping                           |
-
-  @id:artifact-delivery.artifact-contents.004 @rule:artifact.licensing.attribution-travels-with-artifact @inferred @source:Dockerfile#build
-  Scenario: The artifact carries the upstream licence notice and its licence metadata
-    When the operator inspects the artifact
-    Then the artifact contains the project's NOTICE file at /NOTICE
-    And the image's licence label reads "Apache-2.0"
-    And the image's source label reads "https://github.com/fabiocicerchia/nginx-modsecurity"
-    And the image's description says it is not runnable

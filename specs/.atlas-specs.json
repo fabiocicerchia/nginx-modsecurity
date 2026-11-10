@@ -279,7 +279,15 @@
   ],
   "nginx-modsecurity/report": []
  },
- "retired": [],
+ "retired": [
+  "documentation-site.theme.002",
+  "documentation-site.theme.004",
+  "module-build.runtime-flavours.001",
+  "supply-chain.source-verification.003",
+  "artifact-delivery.artifact-contents.004",
+  "documentation-site.theme.003",
+  "documentation-site.theme.005"
+ ],
  "scenarios": {
   "artifact-delivery.artifact-contents.001": {
    "file": "specs/artifact-delivery/artifact-contents/module-artifact-contents.feature",
@@ -306,16 +314,6 @@
    "fingerprint": "403b5366dec8",
    "human": false,
    "rule": "artifact.contents.real-unicode-mapping",
-   "source": "Dockerfile#build",
-   "status": "inferred",
-   "test": "",
-   "tests": []
-  },
-  "artifact-delivery.artifact-contents.004": {
-   "file": "specs/artifact-delivery/artifact-contents/module-artifact-contents.feature",
-   "fingerprint": "403b5366dec8",
-   "human": false,
-   "rule": "artifact.licensing.attribution-travels-with-artifact",
    "source": "Dockerfile#build",
    "status": "inferred",
    "test": "",
@@ -451,46 +449,6 @@
    "test": "",
    "tests": []
   },
-  "documentation-site.theme.002": {
-   "file": "specs/documentation-site/theme/docs-visual-theme.feature",
-   "fingerprint": "ac660254fd34",
-   "human": false,
-   "rule": "docs.theme.shared-accent-palette",
-   "source": "docs/stylesheets/extra.css#:root",
-   "status": "inferred",
-   "test": "",
-   "tests": []
-  },
-  "documentation-site.theme.003": {
-   "file": "specs/documentation-site/theme/docs-visual-theme.feature",
-   "fingerprint": "433084a194b6",
-   "human": false,
-   "rule": "docs.theme.scheme-legible-links",
-   "source": "docs/stylesheets/extra.css#[data-md-color-scheme=\"slate\"]",
-   "status": "inferred",
-   "test": "",
-   "tests": []
-  },
-  "documentation-site.theme.004": {
-   "file": "specs/documentation-site/theme/docs-visual-theme.feature",
-   "fingerprint": "4413aef244b0",
-   "human": false,
-   "rule": "docs.theme.button-hover-glow",
-   "source": "docs/stylesheets/extra.css#.md-typeset .md-button:hover",
-   "status": "inferred",
-   "test": "",
-   "tests": []
-  },
-  "documentation-site.theme.005": {
-   "file": "specs/documentation-site/theme/docs-visual-theme.feature",
-   "fingerprint": "c702704e5aae",
-   "human": false,
-   "rule": "docs.theme.no-borrowed-logo",
-   "source": "docs/stylesheets/extra.css#.md-header__button.md-logo",
-   "status": "inferred",
-   "test": "",
-   "tests": []
-  },
   "documentation-site.theme.006": {
    "file": "specs/documentation-site/theme/docs-visual-theme.feature",
    "fingerprint": "721086d36c47",
@@ -541,16 +499,6 @@
    "test": "",
    "tests": []
   },
-  "module-build.runtime-flavours.001": {
-   "file": "specs/module-build/runtime-flavours/runtime-flavour-selection.feature",
-   "fingerprint": "700bdf7d52c6",
-   "human": false,
-   "rule": "build.flavour.selects-matching-nginx-base",
-   "source": "Makefile#BASE_TAG",
-   "status": "inferred",
-   "test": "",
-   "tests": []
-  },
   "supply-chain.base-pinning.001": {
    "file": "specs/supply-chain/base-pinning/base-image-pinning.feature",
    "fingerprint": "12adcf5fe878",
@@ -577,16 +525,6 @@
    "human": false,
    "rule": "supply-chain.base.pinned-by-digest",
    "source": "Dockerfile#BASE",
-   "status": "inferred",
-   "test": "",
-   "tests": []
-  },
-  "supply-chain.source-verification.003": {
-   "file": "specs/supply-chain/source-verification/verified-pinned-sources.feature",
-   "fingerprint": "403b5366dec8",
-   "human": false,
-   "rule": "module-build.version.compiled-against-named-nginx",
-   "source": "Dockerfile#build",
    "status": "inferred",
    "test": "",
    "tests": []

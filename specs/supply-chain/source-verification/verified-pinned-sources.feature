@@ -24,14 +24,3 @@ Feature: Building the module from verified, pinned sources
     When the operator builds the artifact
     Then the module is compiled on nginx:1.27.5 at digest sha256:6784fb0834aa7dbbe12e3d7471e69c290df3e6ba810dc38b34ae33d3c1c05f7d
     And a re-tagged nginx:1.27.5 upstream does not change what the module is compiled on
-
-  @id:supply-chain.source-verification.003 @rule:module-build.version.compiled-against-named-nginx @inferred @source:Dockerfile#build @questionable
-  Scenario Outline: The module is compiled against the exact nginx release the operator names
-    Given the operator asks for nginx <nginx_version>
-    When the operator builds the artifact
-    Then the module is compiled from the verified nginx <nginx_version> source release
-    And the artifact's NGINX_VERSION file reads "<nginx_version>"
-
-    Examples:
-      | nginx_version |
-      | 1.27.5        |
