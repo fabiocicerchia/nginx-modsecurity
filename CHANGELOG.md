@@ -5,6 +5,16 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.3](https://github.com/fabiocicerchia/nginx-modsecurity/compare/v1.4.2...v1.4.3) (2026-11-13)
+
+
+### Bug Fixes
+
+* 2 issues found by code-atlas (insights to act on) ([#86](https://github.com/fabiocicerchia/nginx-modsecurity/issues/86)) ([45b00e2](https://github.com/fabiocicerchia/nginx-modsecurity/commit/45b00e2710b1fb72517e75061d8f828e02d832fa))
+* 3 issues found by code-atlas (quality gates) ([#85](https://github.com/fabiocicerchia/nginx-modsecurity/issues/85)) ([6e31656](https://github.com/fabiocicerchia/nginx-modsecurity/commit/6e3165659fc42ae3e999b7603ccbe4ee1d9bfec3))
+* 5 issues found by code-atlas (ci that cannot fail) ([#88](https://github.com/fabiocicerchia/nginx-modsecurity/issues/88)) ([285992b](https://github.com/fabiocicerchia/nginx-modsecurity/commit/285992b9ae962487ba2c17e44dbd1b7ce0408eb3))
+* nginx 1.27 reached end of life on 2025-06-24 ([#87](https://github.com/fabiocicerchia/nginx-modsecurity/issues/87)) ([b8705ff](https://github.com/fabiocicerchia/nginx-modsecurity/commit/b8705ff8190cfe9e3096eb2ec1d6e09115ff481c))
+
 ## [1.4.2](https://github.com/fabiocicerchia/nginx-modsecurity/compare/v1.4.1...v1.4.2) (2026-09-20)
 
 
